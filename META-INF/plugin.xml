@@ -1,9 +1,15 @@
 <!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
 <idea-plugin>
-    <name>Spell Checker</name>
     <name>SpellChecker</name>
     <description>Integrates spell checker jazzy into IDEA as inspection</description>
     <version>1.0</version>
     <vendor>Sergiy Dubovik, Alexey Efimov</vendor>
     <idea-version since-build="7274"/>
+
+    <application-components>
+        <component>
+            <implementation-class>org.dubik.spellcheckerlive.SpellCheckerApplication</implementation-class>
+        </component>
+    </application-components>
+
 </idea-plugin>
