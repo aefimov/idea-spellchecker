@@ -79,6 +79,19 @@ public class CommentsSpellCheckerVisitor extends PsiRecursiveElementVisitor {
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         new MisspelledQuickFix(textRange, suggestion.getWord())));
             }
+
+            if (suggestions.size() != 0) {
+                problems.add(this.manager.createProblemDescriptor(
+                        element, textRange,
+                        SpellCheckerBundle.message("word.is.misspelled"),
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        new AddToDictionaryQuickFix()));
+                problems.add(this.manager.createProblemDescriptor(
+                        element, textRange,
+                        SpellCheckerBundle.message("word.is.misspelled"),
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        new IgnoreWordQuickFix()));
+            }
         }
     }
 
