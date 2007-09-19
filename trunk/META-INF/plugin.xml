@@ -5,7 +5,7 @@
     <description>Integrates spell checker jazzy into IDEA as inspection</description>
     <version>0.1</version>
     <vendor>Sergiy Dubovik, Alexey Efimov</vendor>
-    <idea-version since-build="7274"/>
+    <idea-version since-build="7269"/>
 
     <application-components>
         <component>
