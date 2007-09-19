@@ -5,6 +5,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.swabunga.spell.engine.SpellDictionaryHashMap;
+import com.swabunga.spell.engine.Word;
 import com.swabunga.spell.event.SpellChecker;
 import org.intellij.spellChecker.inspections.CommentsWithMistakesInspection;
 import org.jetbrains.annotations.NonNls;
@@ -13,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Spell checker inspection provider.
@@ -23,6 +26,7 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
     private static final Logger LOG = Logger.getInstance("#SpellChecker");
     @NonNls
     private static final String DICT_ENGLISH = "/dict/english.0";
+    private static final int MAX_SUGGESTIONS_THRESHOLD = 10;
 
     public static SpellCheckerManager getInstance() {
         return ApplicationManager.getApplication().getComponent(SpellCheckerManager.class);
@@ -60,5 +64,13 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
     @NotNull
     public SpellChecker getSpellChecker() {
         return spellChecker;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public List<Word> checkWord(String word) {
+        if (!spellChecker.isIgnored(word) && !spellChecker.isCorrect(word)) {
+            return spellChecker.getSuggestions(word, MAX_SUGGESTIONS_THRESHOLD);
+        }
+        return Collections.EMPTY_LIST;
     }
 }
