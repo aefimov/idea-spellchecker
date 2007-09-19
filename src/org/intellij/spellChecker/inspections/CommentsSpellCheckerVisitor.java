@@ -21,8 +21,10 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiPlainText;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.psi.javadoc.PsiDocComment;
+import com.intellij.psi.xml.XmlComment;
 import com.swabunga.spell.engine.Word;
 import org.intellij.spellChecker.SpellCheckerManager;
 import org.intellij.spellChecker.util.SpellCheckerBundle;
@@ -58,6 +60,16 @@ public class CommentsSpellCheckerVisitor extends PsiRecursiveElementVisitor {
         forEachWord(comment, text);
     }
 
+    public void visitXmlComment(XmlComment comment) {
+        String text = comment.getText();
+        forEachWord(comment, text);
+    }
+
+    public void visitPlainText(PsiPlainText content) {
+        String text = content.getText();
+        forEachWord(content, text);
+    }
+
     private void forEachWord(PsiElement element, String text) {
         // Create a pattern to match breaks
         Matcher matcher = WORD_PATTERN.matcher(text);
@@ -85,12 +97,12 @@ public class CommentsSpellCheckerVisitor extends PsiRecursiveElementVisitor {
                         element, textRange,
                         SpellCheckerBundle.message("word.is.misspelled"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        new AddToDictionaryQuickFix()));
+                        new AddToDictionaryQuickFix(word)));
                 problems.add(this.manager.createProblemDescriptor(
                         element, textRange,
                         SpellCheckerBundle.message("word.is.misspelled"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        new IgnoreWordQuickFix()));
+                        new IgnoreWordQuickFix(word)));
             }
         }
     }
