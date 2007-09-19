@@ -1,8 +1,8 @@
-package org.dubik.spellcheckerlive;
+package org.intellij.spellChecker;
 
 import com.intellij.codeInspection.InspectionToolProvider;
 import com.intellij.openapi.components.ApplicationComponent;
-import org.dubik.spellcheckerlive.inspections.SpellCheckerInspection;
+import org.intellij.spellChecker.inspections.SpellCheckerInspection;
 import org.jetbrains.annotations.NotNull;
 
 /**
