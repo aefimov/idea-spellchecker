@@ -22,9 +22,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
+import org.intellij.spellChecker.util.SpellCheckerBundle;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * Quick fix for misspelled words.
+ *
  * @author Sergiy Dubovik
  */
 public class MisspelledQuickFix implements LocalQuickFix {
@@ -40,12 +43,12 @@ public class MisspelledQuickFix implements LocalQuickFix {
 
     @NotNull
     public String getName() {
-        return "Change to " + correctWord;
+        return SpellCheckerBundle.message("change.to.0", correctWord);
     }
 
     @NotNull
     public String getFamilyName() {
-        return "Change to";
+        return SpellCheckerBundle.message("change.to");
     }
 
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
@@ -54,8 +57,11 @@ public class MisspelledQuickFix implements LocalQuickFix {
         Document document = documentManager.getDocument(psiFile);
         int psiElementOffset = descriptor.getPsiElement().getTextOffset();
         if (document != null)
-            document.replaceString(psiElementOffset + textRange.getStartOffset(),
-                    psiElementOffset + textRange.getEndOffset(), correctWord);
+            document.replaceString(
+                    psiElementOffset + textRange.getStartOffset(),
+                    psiElementOffset + textRange.getEndOffset(),
+                    correctWord
+            );
     }
 
 }
