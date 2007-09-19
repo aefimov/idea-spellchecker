@@ -73,4 +73,12 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
         }
         return Collections.EMPTY_LIST;
     }
+
+    public void addToDictionary(String word) {
+        spellChecker.addToDictionary(word);
+    }
+
+    public void ignoreAll(String word) {
+        spellChecker.ignoreAll(word);
+    }
 }

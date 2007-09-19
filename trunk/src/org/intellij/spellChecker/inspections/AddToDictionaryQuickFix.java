@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Sergiy Dubovik
+ * Copyright 2007 Sergiy Dubovik, Alexey Efimov
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,31 @@ package org.intellij.spellChecker.inspections;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.project.Project;
+import org.intellij.spellChecker.SpellCheckerManager;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Sergiy Dubovik
  */
 public class AddToDictionaryQuickFix implements LocalQuickFix {
+    private String word;
+
+    public AddToDictionaryQuickFix(String word) {
+        this.word = word;
+    }
+
     @NotNull
     public String getName() {
-        return "Add to Dictionary";
+        return "Add Word To Dictionary";
     }
 
     @NotNull
     public String getFamilyName() {
-        return "Add to Dictionary";
+        return "SpellChecker";
     }
 
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+        SpellCheckerManager spellCheckerManager = SpellCheckerManager.getInstance();
+        spellCheckerManager.addToDictionary(word);
     }
 }
