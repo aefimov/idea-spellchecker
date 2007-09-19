@@ -24,7 +24,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.swabunga.spell.engine.Word;
-import com.swabunga.spell.event.SpellChecker;
 import org.intellij.spellChecker.SpellCheckerManager;
 import org.intellij.spellChecker.util.SpellCheckerBundle;
 import org.jetbrains.annotations.NonNls;
@@ -70,12 +69,11 @@ public class CommentsSpellCheckerVisitor extends PsiRecursiveElementVisitor {
     private void visitWord(PsiElement element, int start, int end) {
         if (end - start > 1) {
             TextRange textRange = new TextRange(start, end);
-            SpellChecker checker = SpellCheckerManager.getInstance().getSpellChecker();
             String word = element.getText().substring(start, end);
-            //noinspection unchecked
-            List<Word> suggestions = checker.getSuggestions(word, 10);
+            SpellCheckerManager manager = SpellCheckerManager.getInstance();
+            List<Word> suggestions = manager.checkWord(word);
             for (Word suggestion : suggestions) {
-                problems.add(manager.createProblemDescriptor(
+                problems.add(this.manager.createProblemDescriptor(
                         element, textRange,
                         SpellCheckerBundle.message("word.is.misspelled"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
