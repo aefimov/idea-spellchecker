@@ -19,31 +19,34 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.psi.PsiFile;
+import org.intellij.spellChecker.util.SpellCheckerBundle;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
+ * Inspection for spelling in comments.
+ *
  * @author Sergiy Dubovik
  */
-public class SpellCheckerInspection extends LocalInspectionTool {
+public class CommentsWithMistakesInspection extends LocalInspectionTool {
     @Nls
     @NotNull
     public String getGroupDisplayName() {
-        return "Spell Checker";
+        return SpellCheckerBundle.message("spelling");
     }
 
     @Nls
     @NotNull
     public String getDisplayName() {
-        return "Spell Checker Inspection";
+        return SpellCheckerBundle.message("comments.with.mistakes");
     }
 
     @NonNls
     @NotNull
     public String getShortName() {
-        return "SpellCheckerInspection";
+        return "CommentsWithMistakes";
     }
 
     public boolean isEnabledByDefault() {
@@ -52,7 +55,7 @@ public class SpellCheckerInspection extends LocalInspectionTool {
 
     @Nullable
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
-        SpellCheckerVisitor visitor = new SpellCheckerVisitor(manager);
+        CommentsSpellCheckerVisitor visitor = new CommentsSpellCheckerVisitor(manager);
         file.accept(visitor);
         return visitor.getProblems();
     }
