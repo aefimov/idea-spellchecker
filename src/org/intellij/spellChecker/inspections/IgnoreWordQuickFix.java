@@ -19,9 +19,12 @@ import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.project.Project;
 import org.intellij.spellChecker.SpellCheckerManager;
+import org.intellij.spellChecker.util.SpellCheckerBundle;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * Ignore word quick fix.
+ *
  * @author Sergiy Dubovik
  */
 public class IgnoreWordQuickFix implements LocalQuickFix {
@@ -33,12 +36,12 @@ public class IgnoreWordQuickFix implements LocalQuickFix {
 
     @NotNull
     public String getName() {
-        return "Add Word To Ignore List";
+        return SpellCheckerBundle.message("add.word.to.ignore.list");
     }
 
     @NotNull
     public String getFamilyName() {
-        return "SpellChecker";
+        return SpellCheckerBundle.message("spelling");
     }
 
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {

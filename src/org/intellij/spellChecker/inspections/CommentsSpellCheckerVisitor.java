@@ -16,6 +16,7 @@
 package org.intellij.spellChecker.inspections;
 
 import com.intellij.codeInspection.InspectionManager;
+import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.util.TextRange;
@@ -41,13 +42,13 @@ import java.util.regex.Pattern;
  * @author Sergiy Dubovik
  */
 public class CommentsSpellCheckerVisitor extends PsiRecursiveElementVisitor {
-    private InspectionManager manager;
+    private InspectionManager inspectionManager;
     private List<ProblemDescriptor> problems = new ArrayList<ProblemDescriptor>();
     @NonNls
     private static final Pattern WORD_PATTERN = Pattern.compile("\\w+");
 
-    CommentsSpellCheckerVisitor(InspectionManager manager) {
-        this.manager = manager;
+    CommentsSpellCheckerVisitor(InspectionManager inspectionManager) {
+        this.inspectionManager = inspectionManager;
     }
 
     public void visitComment(PsiComment comment) {
@@ -83,26 +84,20 @@ public class CommentsSpellCheckerVisitor extends PsiRecursiveElementVisitor {
             TextRange textRange = new TextRange(start, end);
             String word = element.getText().substring(start, end);
             SpellCheckerManager manager = SpellCheckerManager.getInstance();
-            List<Word> suggestions = manager.checkWord(word);
-            for (Word suggestion : suggestions) {
-                problems.add(this.manager.createProblemDescriptor(
+            if (manager.hasProblem(word)) {
+                List<Word> suggestions = manager.getSuggestions(word);
+                List<LocalQuickFix> fixes = new ArrayList<LocalQuickFix>();
+                for (Word suggestion : suggestions) {
+                    fixes.add(new MisspelledQuickFix(textRange, suggestion.getWord()));
+                }
+                fixes.add(new AddToDictionaryQuickFix(word));
+                fixes.add(new IgnoreWordQuickFix(word));
+                problems.add(inspectionManager.createProblemDescriptor(
                         element, textRange,
                         SpellCheckerBundle.message("word.is.misspelled"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        new MisspelledQuickFix(textRange, suggestion.getWord())));
-            }
-
-            if (suggestions.size() != 0) {
-                problems.add(this.manager.createProblemDescriptor(
-                        element, textRange,
-                        SpellCheckerBundle.message("word.is.misspelled"),
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        new AddToDictionaryQuickFix(word)));
-                problems.add(this.manager.createProblemDescriptor(
-                        element, textRange,
-                        SpellCheckerBundle.message("word.is.misspelled"),
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        new IgnoreWordQuickFix(word)));
+                        fixes.toArray(new LocalQuickFix[fixes.size()]))
+                );
             }
         }
     }
