@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Sergiy Dubovik
+ * Copyright 2007 Sergiy Dubovik, Alexey Efimov
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

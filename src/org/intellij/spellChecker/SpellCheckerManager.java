@@ -1,3 +1,18 @@
+/*
+ * Copyright 2007 Sergiy Dubovik, Alexey Efimov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.intellij.spellChecker;
 
 import com.intellij.codeInspection.InspectionToolProvider;
@@ -11,6 +26,7 @@ import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.engine.Word;
 import com.swabunga.spell.event.SpellChecker;
 import org.intellij.spellChecker.inspections.CommentsWithMistakesInspection;
+import org.intellij.spellChecker.util.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -24,7 +40,7 @@ import java.util.Set;
 /**
  * Spell checker inspection provider.
  *
- * @author Sergiy Dubovik
+ * @author Sergiy Dubovik, Alexey Efimov
  */
 @State(
         name = "SpellChecker",
@@ -89,7 +105,18 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
     @SuppressWarnings({"unchecked"})
     public List<Word> getSuggestions(String word) {
         if (!spellChecker.isIgnored(word) && !spellChecker.isCorrect(word)) {
-            return spellChecker.getSuggestions(word, MAX_SUGGESTIONS_THRESHOLD);
+            List<Word> suggestions = spellChecker.getSuggestions(word, MAX_SUGGESTIONS_THRESHOLD);
+            if (suggestions.size() != 0) {
+                boolean capitalized = WordUtils.isCapitalized(word);
+                boolean upperCases = WordUtils.isUpperCase(word);
+
+                if (capitalized)
+                    WordUtils.capitalize(suggestions);
+                else if (upperCases)
+                    WordUtils.upperCase(suggestions);
+            }
+
+            return suggestions;
         }
         return Collections.EMPTY_LIST;
     }
