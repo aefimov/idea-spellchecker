@@ -16,19 +16,14 @@
 package org.intellij.spellChecker.inspections;
 
 import com.intellij.codeInspection.InspectionManager;
-import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiPlainText;
-import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.xml.XmlComment;
-import com.swabunga.spell.engine.Word;
-import org.intellij.spellChecker.SpellCheckerManager;
-import org.intellij.spellChecker.util.SpellCheckerBundle;
+import org.intellij.spellChecker.util.WordUtils;
 import org.jetbrains.annotations.NonNls;
 
 import java.util.ArrayList;
@@ -41,14 +36,19 @@ import java.util.regex.Pattern;
  *
  * @author Sergiy Dubovik
  */
-public class CommentsSpellCheckerVisitor extends PsiRecursiveElementVisitor {
-    private InspectionManager inspectionManager;
+public class CommentsSpellCheckerVisitor extends AbstractSpellCheckerVisitor {
     private List<ProblemDescriptor> problems = new ArrayList<ProblemDescriptor>();
     @NonNls
-    private static final Pattern WORD_PATTERN = Pattern.compile("\\w+");
+    private static final Pattern NON_SPACE = Pattern.compile("\\S+");
+    @NonNls
+    private static final Pattern WORD = Pattern.compile("\\b\\p{Alpha}+\\b");
+    @NonNls
+    private static final Pattern URL = Pattern.compile("(https?|ftp|mailto)\\:\\/\\/");
+    @NonNls
+    private static final Pattern COMPLEX = Pattern.compile("(\\.[^\\.]+)|([@_]+)");
 
     CommentsSpellCheckerVisitor(InspectionManager inspectionManager) {
-        this.inspectionManager = inspectionManager;
+        super(inspectionManager);
     }
 
     public void visitComment(PsiComment comment) {
@@ -73,31 +73,29 @@ public class CommentsSpellCheckerVisitor extends PsiRecursiveElementVisitor {
 
     private void forEachWord(PsiElement element, String text) {
         // Create a pattern to match breaks
-        Matcher matcher = WORD_PATTERN.matcher(text);
+        Matcher matcher = NON_SPACE.matcher(text);
         while (matcher.find()) {
-            visitWord(element, matcher.start(), matcher.end());
+            visitNonSpace(element, matcher.start(), matcher.end());
+        }
+    }
+
+    private void visitNonSpace(PsiElement element, int start, int end) {
+        if (end - start > 1) {
+            String text = element.getText().substring(start, end);
+            if (!URL.matcher(text).find() && !COMPLEX.matcher(text).find()) {
+                Matcher matcher = WORD.matcher(text);
+                while (matcher.find()) {
+                    visitWord(element, start + matcher.start(), start + matcher.end());
+                }
+            }
         }
     }
 
     private void visitWord(PsiElement element, int start, int end) {
         if (end - start > 1) {
-            TextRange textRange = new TextRange(start, end);
             String word = element.getText().substring(start, end);
-            SpellCheckerManager manager = SpellCheckerManager.getInstance();
-            if (manager.hasProblem(word)) {
-                List<Word> suggestions = manager.getSuggestions(word);
-                List<LocalQuickFix> fixes = new ArrayList<LocalQuickFix>();
-                for (Word suggestion : suggestions) {
-                    fixes.add(new MisspelledQuickFix(textRange, suggestion.getWord()));
-                }
-                fixes.add(new AddToDictionaryQuickFix(word));
-                fixes.add(new IgnoreWordQuickFix(word));
-                problems.add(inspectionManager.createProblemDescriptor(
-                        element, textRange,
-                        SpellCheckerBundle.message("word.is.misspelled"),
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        fixes.toArray(new LocalQuickFix[fixes.size()]))
-                );
+            if (!WordUtils.isMixedCase(word)) {
+                problems.addAll(inspect(element, new TextRange(start, end), word));
             }
         }
     }

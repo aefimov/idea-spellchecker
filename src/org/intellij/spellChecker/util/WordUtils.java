@@ -20,9 +20,14 @@ import com.swabunga.spell.engine.Word;
 import java.util.List;
 
 /**
+ * Text utility.
+ *
  * @author Sergiy Dubovik
  */
-public class WordUtils {
+public final class WordUtils {
+    private WordUtils() {
+    }
+
     public static boolean isCapitalized(String word) {
         if (word.length() == 0)
             return false;
