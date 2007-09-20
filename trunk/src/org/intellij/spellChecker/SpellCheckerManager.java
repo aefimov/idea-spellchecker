@@ -110,10 +110,11 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
                 boolean capitalized = WordUtils.isCapitalized(word);
                 boolean upperCases = WordUtils.isUpperCase(word);
 
-                if (capitalized)
+                if (capitalized) {
                     WordUtils.capitalize(suggestions);
-                else if (upperCases)
+                } else if (upperCases) {
                     WordUtils.upperCase(suggestions);
+                }
             }
 
             return suggestions;

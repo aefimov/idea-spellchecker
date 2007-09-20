@@ -28,7 +28,7 @@ public abstract class AbstractSpellCheckerVisitor extends PsiRecursiveElementVis
     }
 
     protected List<ProblemDescriptor> inspect(PsiElement element, TextRange textRange, String word) {
-        SpellCheckerManager manager = new SpellCheckerManager();
+        SpellCheckerManager manager = SpellCheckerManager.getInstance();
         if (manager.hasProblem(word)) {
             List<Word> suggestions = manager.getSuggestions(word);
             List<LocalQuickFix> fixes = new ArrayList<LocalQuickFix>();
