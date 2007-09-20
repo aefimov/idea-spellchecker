@@ -302,6 +302,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/spellchecker.iml" filepath="$PROJECT_DIR$/spellchecker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dictionaries/english/spellchecker-dict-english.iml" filepath="$PROJECT_DIR$/dictionaries/english/spellchecker-dict-english.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="idea" project-jdk-type="IDEA JDK">

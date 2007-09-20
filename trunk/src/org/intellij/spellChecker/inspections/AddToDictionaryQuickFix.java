@@ -19,9 +19,12 @@ import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.project.Project;
 import org.intellij.spellChecker.SpellCheckerManager;
+import org.intellij.spellChecker.util.SpellCheckerBundle;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * Add to dictionary quick fix.
+ *
  * @author Sergiy Dubovik
  */
 public class AddToDictionaryQuickFix implements LocalQuickFix {
@@ -33,12 +36,12 @@ public class AddToDictionaryQuickFix implements LocalQuickFix {
 
     @NotNull
     public String getName() {
-        return "Add Word To Dictionary";
+        return SpellCheckerBundle.message("add.word.to.dictionary");
     }
 
     @NotNull
     public String getFamilyName() {
-        return "SpellChecker";
+        return SpellCheckerBundle.message("spelling");
     }
 
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
