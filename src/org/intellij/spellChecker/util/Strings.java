@@ -15,8 +15,6 @@
  */
 package org.intellij.spellChecker.util;
 
-import com.swabunga.spell.engine.Word;
-
 import java.util.List;
 
 /**
@@ -24,8 +22,8 @@ import java.util.List;
  *
  * @author Sergiy Dubovik
  */
-public final class WordUtils {
-    private WordUtils() {
+public final class Strings {
+    private Strings() {
     }
 
     public static boolean isCapitalized(String word) {
@@ -67,15 +65,15 @@ public final class WordUtils {
         return buf.toString();
     }
 
-    public static void capitalize(List<Word> words) {
-        for (Word word : words) {
-            word.setWord(capitalize(word.getWord()));
+    public static void capitalize(List<String> words) {
+        for (int i = 0; i < words.size(); i++) {
+            words.set(i, capitalize(words.get(i)));
         }
     }
 
-    public static void upperCase(List<Word> words) {
-        for (Word word : words) {
-            word.setWord(word.getWord().toUpperCase());
+    public static void upperCase(List<String> words) {
+        for (int i = 0; i < words.size(); i++) {
+            words.set(i, words.get(i).toUpperCase());
         }
     }
 }

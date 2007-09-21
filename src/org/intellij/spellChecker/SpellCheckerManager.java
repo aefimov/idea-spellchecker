@@ -22,16 +22,14 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import com.swabunga.spell.engine.SpellDictionaryHashMap;
-import com.swabunga.spell.engine.Word;
-import com.swabunga.spell.event.SpellChecker;
+import org.intellij.spellChecker.engine.SpellChecker;
+import org.intellij.spellChecker.engine.SpellCheckerFactory;
 import org.intellij.spellChecker.inspections.CommentsWithMistakesInspection;
-import org.intellij.spellChecker.util.WordUtils;
+import org.intellij.spellChecker.util.Strings;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -61,7 +59,7 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
             CommentsWithMistakesInspection.class
     };
 
-    private final SpellChecker spellChecker = new SpellChecker();
+    private final SpellChecker spellChecker = SpellCheckerFactory.create();
     private final State state = new State();
 
     public void initComponent() {
@@ -103,17 +101,17 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
     }
 
     @SuppressWarnings({"unchecked"})
-    public List<Word> getSuggestions(String word) {
+    public List<String> getSuggestions(String word) {
         if (!spellChecker.isIgnored(word) && !spellChecker.isCorrect(word)) {
-            List<Word> suggestions = spellChecker.getSuggestions(word, MAX_SUGGESTIONS_THRESHOLD);
+            List<String> suggestions = spellChecker.getSuggestions(word, MAX_SUGGESTIONS_THRESHOLD);
             if (suggestions.size() != 0) {
-                boolean capitalized = WordUtils.isCapitalized(word);
-                boolean upperCases = WordUtils.isUpperCase(word);
+                boolean capitalized = Strings.isCapitalized(word);
+                boolean upperCases = Strings.isUpperCase(word);
 
                 if (capitalized) {
-                    WordUtils.capitalize(suggestions);
+                    Strings.capitalize(suggestions);
                 } else if (upperCases) {
-                    WordUtils.upperCase(suggestions);
+                    Strings.upperCase(suggestions);
                 }
             }
 
@@ -129,7 +127,7 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
      * @throws java.io.IOException if dictionary load with problems
      */
     public void addDictionary(InputStream inputStream) throws IOException {
-        spellChecker.addDictionary(new SpellDictionaryHashMap(new InputStreamReader(inputStream)));
+        spellChecker.addDictionary(inputStream);
     }
 
     public void addToDictionary(String word) {
