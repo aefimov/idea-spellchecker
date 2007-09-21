@@ -23,7 +23,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiPlainText;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.xml.XmlComment;
-import org.intellij.spellChecker.util.WordUtils;
+import org.intellij.spellChecker.util.Strings;
 import org.jetbrains.annotations.NonNls;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * PSI visition to check spelling in comments.
+ * PSI visitor to check spelling in comments.
  *
  * @author Sergiy Dubovik
  */
@@ -94,7 +94,7 @@ public class CommentsSpellCheckerVisitor extends AbstractSpellCheckerVisitor {
     private void visitWord(PsiElement element, int start, int end) {
         if (end - start > 1) {
             String word = element.getText().substring(start, end);
-            if (!WordUtils.isMixedCase(word)) {
+            if (!Strings.isMixedCase(word)) {
                 problems.addAll(inspect(element, new TextRange(start, end), word));
             }
         }

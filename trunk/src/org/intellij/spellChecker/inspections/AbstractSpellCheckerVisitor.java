@@ -22,7 +22,6 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
-import com.swabunga.spell.engine.Word;
 import org.intellij.spellChecker.SpellCheckerManager;
 import org.intellij.spellChecker.util.SpellCheckerBundle;
 
@@ -45,10 +44,10 @@ public abstract class AbstractSpellCheckerVisitor extends PsiRecursiveElementVis
     protected List<ProblemDescriptor> inspect(PsiElement element, TextRange textRange, String word) {
         SpellCheckerManager manager = SpellCheckerManager.getInstance();
         if (manager.hasProblem(word)) {
-            List<Word> suggestions = manager.getSuggestions(word);
+            List<String> suggestions = manager.getSuggestions(word);
             List<LocalQuickFix> fixes = new ArrayList<LocalQuickFix>();
-            for (Word suggestion : suggestions) {
-                fixes.add(new MisspelledQuickFix(textRange, suggestion.getWord()));
+            for (String suggestion : suggestions) {
+                fixes.add(new MisspelledQuickFix(textRange, suggestion));
             }
             fixes.add(new AddToDictionaryQuickFix(word));
             fixes.add(new IgnoreWordQuickFix(word));
