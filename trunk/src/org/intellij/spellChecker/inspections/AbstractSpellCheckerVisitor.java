@@ -34,7 +34,7 @@ import java.util.List;
  *
  * @author Alexey Efimov
  */
-public abstract class AbstractSpellCheckerVisitor extends PsiRecursiveElementVisitor implements SpellCheckerInspector {
+public abstract class AbstractSpellCheckerVisitor extends PsiRecursiveElementVisitor implements SpellCheckerVisitor {
     protected InspectionManager inspectionManager;
 
     protected AbstractSpellCheckerVisitor(InspectionManager inspectionManager) {

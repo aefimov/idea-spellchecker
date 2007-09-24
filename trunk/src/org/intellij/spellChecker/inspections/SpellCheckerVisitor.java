@@ -18,10 +18,10 @@ package org.intellij.spellChecker.inspections;
 import com.intellij.codeInspection.ProblemDescriptor;
 
 /**
- * Spell checker inspector.
+ * Spell checker visitor.
  *
  * @author Alexey Efimov
  */
-public interface SpellCheckerInspector {
+public interface SpellCheckerVisitor {
     ProblemDescriptor[] getProblems();
 }

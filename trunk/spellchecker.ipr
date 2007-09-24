@@ -370,5 +370,6 @@
       <option name="VERSION" />
     </GetOptions>
   </component>
+  <component name="WebServicesPlugin" addRequiredLibraries="true" />
 </project>
 
