@@ -18,6 +18,8 @@ package org.intellij.spellChecker.inspections;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
+import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.codeStyle.NameUtil;
 import org.intellij.spellChecker.util.SpellCheckerBundle;
@@ -25,6 +27,9 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Inspection to check method names.
@@ -52,12 +57,29 @@ public class MethodNameWithMistakesInspection extends LocalInspectionTool {
 
     @Nullable
     public ProblemDescriptor[] checkMethod(@NotNull PsiMethod method, @NotNull InspectionManager manager, boolean isOnTheFly) {
-        String methodName = method.getName();
-        String[] words = NameUtil.nameToWords(methodName);
-        for (String word : words) {
+        List<ProblemDescriptor> problems = null;
+        PsiIdentifier psiName = method.getNameIdentifier();
+        if (psiName != null) {
+            String methodName = psiName.getText();
+            String[] words = NameUtil.nameToWords(methodName);
+            int index = 0;
+            for (String word : words) {
+                int start = methodName.indexOf(word, index);
+                int end = start + word.length();
+                List<ProblemDescriptor> list = SpellCheckerInspector.inspectText(
+                        manager, psiName, new TextRange(start, end), word
+                );
+                if (list.size() > 0) {
+                    if (problems == null) {
+                        problems = new ArrayList<ProblemDescriptor>(list.size());
+                    }
+                    problems.addAll(list);
+                }
+                index = end;
+            }
 
+            return problems != null ? problems.toArray(new ProblemDescriptor[problems.size()]) : null;
         }
-
-        return super.checkMethod(method, manager, isOnTheFly);
+        return null;
     }
 }
