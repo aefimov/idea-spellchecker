@@ -58,16 +58,17 @@ public class MethodNameWithMistakesInspection extends LocalInspectionTool {
     @Nullable
     public ProblemDescriptor[] checkMethod(@NotNull PsiMethod method, @NotNull InspectionManager manager, boolean isOnTheFly) {
         List<ProblemDescriptor> problems = null;
+        String methodName = method.getName();
         PsiIdentifier psiName = method.getNameIdentifier();
         if (psiName != null) {
-            String methodName = psiName.getText();
             String[] words = NameUtil.nameToWords(methodName);
+            int offsetInParent = psiName.getStartOffsetInParent();
             int index = 0;
             for (String word : words) {
                 int start = methodName.indexOf(word, index);
                 int end = start + word.length();
-                List<ProblemDescriptor> list = SpellCheckerInspector.inspectText(
-                        manager, psiName, new TextRange(start, end), word
+                List<ProblemDescriptor> list = SpellCheckerInspector.inspectWithRenameTo(
+                        manager, method, new TextRange(offsetInParent + start, offsetInParent + end), word
                 );
                 if (list.size() > 0) {
                     if (problems == null) {
