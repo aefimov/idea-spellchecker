@@ -36,6 +36,6 @@ public abstract class AbstractSpellCheckerVisitor extends PsiRecursiveElementVis
     }
 
     protected List<ProblemDescriptor> inspect(PsiElement element, TextRange textRange, String word) {
-        return SpellCheckerInspector.inspectText(inspectionManager, element, textRange, word);
+        return SpellCheckerInspector.inspectWithChangeTo(inspectionManager, element, textRange, word);
     }
 }

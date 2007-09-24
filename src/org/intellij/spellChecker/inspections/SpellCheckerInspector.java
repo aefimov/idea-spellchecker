@@ -1,3 +1,18 @@
+/*
+ * Copyright 2007 Sergiy Dubovik, Alexey Efimov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.intellij.spellChecker.inspections;
 
 import com.intellij.codeInspection.InspectionManager;
@@ -19,7 +34,7 @@ import java.util.List;
  * @author Alexey Efimov
  */
 public class SpellCheckerInspector {
-    public static List<ProblemDescriptor> inspectText(InspectionManager inspectionManager, PsiElement element, TextRange textRange, String word) {
+    public static List<ProblemDescriptor> inspectWithChangeTo(InspectionManager inspectionManager, PsiElement element, TextRange textRange, String word) {
         SpellCheckerManager manager = SpellCheckerManager.getInstance();
         if (manager.hasProblem(word)) {
             List<String> suggestions = manager.getSuggestions(word);
@@ -38,21 +53,26 @@ public class SpellCheckerInspector {
         return Collections.emptyList();
     }
 
-    public static List<ProblemDescriptor> inspectPSI(InspectionManager inspectionManager, PsiElement element, TextRange textRange, String word) {
+    public static List<ProblemDescriptor> inspectWithRenameTo(InspectionManager inspectionManager, PsiElement element, TextRange textRange, String word) {
         SpellCheckerManager manager = SpellCheckerManager.getInstance();
         if (manager.hasProblem(word)) {
-            List<String> suggestions = manager.getSuggestions(word);
-            List<LocalQuickFix> fixes = new ArrayList<LocalQuickFix>();
-            for (String suggestion : suggestions) {
-                fixes.add(new ChangeToQuickFix(textRange, suggestion));
+            PsiElement child = element.findElementAt(textRange.getStartOffset());
+            if (child != null) {
+                List<String> suggestions = manager.getSuggestions(word);
+                List<LocalQuickFix> fixes = new ArrayList<LocalQuickFix>();
+                for (String suggestion : suggestions) {
+                    // Construct corrected method name
+                    TextRange subRange = textRange.shiftRight(-child.getStartOffsetInParent());
+                    fixes.add(new RenameToQuickFix(subRange.replace(child.getText(), suggestion)));
+                }
+                fixes.add(new AddToDictionaryQuickFix(word));
+                fixes.add(new IgnoreWordQuickFix(word));
+                return Collections.singletonList(inspectionManager.createProblemDescriptor(
+                        element, textRange,
+                        SpellCheckerBundle.message("word.is.misspelled"),
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        fixes.toArray(new LocalQuickFix[fixes.size()])));
             }
-            fixes.add(new AddToDictionaryQuickFix(word));
-            fixes.add(new IgnoreWordQuickFix(word));
-            return Collections.singletonList(inspectionManager.createProblemDescriptor(
-                    element, textRange,
-                    SpellCheckerBundle.message("word.is.misspelled"),
-                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                    fixes.toArray(new LocalQuickFix[fixes.size()])));
         }
         return Collections.emptyList();
     }
