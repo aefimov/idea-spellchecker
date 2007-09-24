@@ -16,6 +16,7 @@
 package org.intellij.spellChecker.inspections;
 
 import com.intellij.codeInspection.ProblemDescriptor;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Spell checker visitor.
@@ -23,5 +24,6 @@ import com.intellij.codeInspection.ProblemDescriptor;
  * @author Alexey Efimov
  */
 public interface SpellCheckerVisitor {
+    @Nullable
     ProblemDescriptor[] getProblems();
 }

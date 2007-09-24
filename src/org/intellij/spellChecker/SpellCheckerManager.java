@@ -25,6 +25,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.intellij.spellChecker.engine.SpellChecker;
 import org.intellij.spellChecker.engine.SpellCheckerFactory;
 import org.intellij.spellChecker.inspections.CommentsWithMistakesInspection;
+import org.intellij.spellChecker.inspections.MethodNameWithMistakesInspection;
 import org.intellij.spellChecker.util.Strings;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,7 +57,8 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
     }
 
     private static final Class[] INSPECTIONS = {
-            CommentsWithMistakesInspection.class
+            CommentsWithMistakesInspection.class,
+            MethodNameWithMistakesInspection.class,
     };
 
     private final SpellChecker spellChecker = SpellCheckerFactory.create();

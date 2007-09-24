@@ -37,7 +37,6 @@ import java.util.regex.Pattern;
  * @author Sergiy Dubovik
  */
 public class CommentsSpellCheckerVisitor extends AbstractSpellCheckerVisitor {
-    private List<ProblemDescriptor> problems = new ArrayList<ProblemDescriptor>();
     @NonNls
     private static final Pattern NON_SPACE = Pattern.compile("\\S+");
     @NonNls
@@ -46,6 +45,8 @@ public class CommentsSpellCheckerVisitor extends AbstractSpellCheckerVisitor {
     private static final Pattern URL = Pattern.compile("(https?|ftp|mailto)\\:\\/\\/");
     @NonNls
     private static final Pattern COMPLEX = Pattern.compile("(\\.[^\\.]+)|([@_]+)");
+
+    private List<ProblemDescriptor> problems;
 
     CommentsSpellCheckerVisitor(InspectionManager inspectionManager) {
         super(inspectionManager);
@@ -95,12 +96,18 @@ public class CommentsSpellCheckerVisitor extends AbstractSpellCheckerVisitor {
         if (end - start > 1) {
             String word = element.getText().substring(start, end);
             if (!Strings.isMixedCase(word)) {
-                problems.addAll(inspect(element, new TextRange(start, end), word));
+                List<ProblemDescriptor> list = inspect(element, new TextRange(start, end), word);
+                if (list.size() > 0) {
+                    if (problems == null) {
+                        problems = new ArrayList<ProblemDescriptor>(list.size());
+                    }
+                    problems.addAll(list);
+                }
             }
         }
     }
 
     public ProblemDescriptor[] getProblems() {
-        return problems.toArray(new ProblemDescriptor[problems.size()]);
+        return problems != null ? problems.toArray(new ProblemDescriptor[problems.size()]) : null;
     }
 }
