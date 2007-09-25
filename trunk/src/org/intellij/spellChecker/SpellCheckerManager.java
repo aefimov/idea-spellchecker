@@ -24,6 +24,7 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.intellij.spellChecker.engine.SpellChecker;
 import org.intellij.spellChecker.engine.SpellCheckerFactory;
+import org.intellij.spellChecker.inspections.AdvancedXmlSpellingInspection;
 import org.intellij.spellChecker.inspections.CommentsWithMistakesInspection;
 import org.intellij.spellChecker.inspections.MethodNameWithMistakesInspection;
 import org.intellij.spellChecker.util.Strings;
@@ -59,6 +60,7 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
     private static final Class[] INSPECTIONS = {
             CommentsWithMistakesInspection.class,
             MethodNameWithMistakesInspection.class,
+            AdvancedXmlSpellingInspection.class
     };
 
     private final SpellChecker spellChecker = SpellCheckerFactory.create();
