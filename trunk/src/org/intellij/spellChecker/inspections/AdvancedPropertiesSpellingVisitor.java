@@ -17,19 +17,25 @@ package org.intellij.spellChecker.inspections;
 
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NonNls;
 
 /**
  * @author Sergiy Dubovik
  */
 public class AdvancedPropertiesSpellingVisitor extends AbstractSpellCheckerVisitor {
+    @NonNls
+    private static final String PROPERTY = "Property";
+
     protected AdvancedPropertiesSpellingVisitor(InspectionManager inspectionManager) {
         super(inspectionManager);
     }
 
     public void visitElement(PsiElement element) {
-        if (element.toString().startsWith("Property")) {
+        if (element.toString().startsWith(PROPERTY)) {
             PsiElement value = element.getLastChild();
-            forEachWord(value, value.getText());
+            if (value != null) {
+                forEachWord(value, value.getText());
+            }
         } else {
             super.visitElement(element);
         }

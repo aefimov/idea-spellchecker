@@ -32,6 +32,8 @@ import org.jetbrains.annotations.Nullable;
  * @author Sergiy Dubovik
  */
 public class AdvancedPropertiesSpellingInspection extends LocalInspectionTool {
+    @NonNls
+    private static final String PROPERTIES = "Properties";
 
     @Nls
     @NotNull
@@ -54,7 +56,7 @@ public class AdvancedPropertiesSpellingInspection extends LocalInspectionTool {
     @Nullable
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
         Language language = file.getLanguage();
-        if (language.getID().equals("Properties")) {
+        if (PROPERTIES.equals(language.getID())) {
             AbstractSpellCheckerVisitor visitor = new AdvancedPropertiesSpellingVisitor(manager);
             file.accept(visitor);
             return visitor.getProblems();
