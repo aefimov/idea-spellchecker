@@ -48,7 +48,7 @@ public class SpellCheckerInspector {
             fixes.add(new IgnoreWordQuickFix(word));
             return Collections.singletonList(inspectionManager.createProblemDescriptor(
                     element, textRange,
-                    SpellCheckerBundle.message("word.is.misspelled"),
+                    SpellCheckerBundle.message("word.0.is.misspelled", word),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     fixes.toArray(new LocalQuickFix[fixes.size()])));
         }
@@ -73,7 +73,7 @@ public class SpellCheckerInspector {
                     fixes.add(new IgnoreWordQuickFix(word));
                     return Collections.singletonList(inspectionManager.createProblemDescriptor(
                             element, textRange,
-                            SpellCheckerBundle.message("word.is.misspelled"),
+                            SpellCheckerBundle.message("word.0.is.misspelled", word),
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             fixes.toArray(new LocalQuickFix[fixes.size()])));
                 }
