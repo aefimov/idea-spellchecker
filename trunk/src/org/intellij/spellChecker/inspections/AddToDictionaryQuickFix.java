@@ -36,7 +36,7 @@ public class AddToDictionaryQuickFix implements LocalQuickFix {
 
     @NotNull
     public String getName() {
-        return SpellCheckerBundle.message("add.word.to.dictionary");
+        return SpellCheckerBundle.message("add.0.to.dictionary", word);
     }
 
     @NotNull

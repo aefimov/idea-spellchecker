@@ -36,7 +36,7 @@ public class IgnoreWordQuickFix implements LocalQuickFix {
 
     @NotNull
     public String getName() {
-        return SpellCheckerBundle.message("add.word.to.ignore.list");
+        return SpellCheckerBundle.message("add.0.to.ignore.list", word);
     }
 
     @NotNull

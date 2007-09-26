@@ -55,6 +55,10 @@ public class MethodNameWithMistakesInspection extends LocalInspectionTool {
         return "MethodNameWithMistakes";
     }
 
+    public boolean isEnabledByDefault() {
+        return true;
+    }
+
     @Nullable
     public ProblemDescriptor[] checkMethod(@NotNull PsiMethod method, @NotNull InspectionManager manager, boolean isOnTheFly) {
         List<ProblemDescriptor> problems = null;
