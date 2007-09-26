@@ -60,7 +60,8 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
             ClassNameWithMistakesInspection.class,
             MethodNameWithMistakesInspection.class,
             FieldNameWithMistakesInspection.class,
-            AdvancedXmlSpellingInspection.class
+            AdvancedXmlSpellingInspection.class,
+            AdvancedPropertiesSpellingInspection.class
     };
 
     private final SpellChecker spellChecker = SpellCheckerFactory.create();
