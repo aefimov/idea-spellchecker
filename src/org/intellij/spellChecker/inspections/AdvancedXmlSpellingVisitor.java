@@ -35,7 +35,7 @@ public class AdvancedXmlSpellingVisitor extends AbstractSpellCheckerVisitor {
     }
 
     public void visitXmlAttributeValue(XmlAttributeValue value) {
-        String str = value.getText();
-        forEachWord(value, str);
+        String str = value.getValue();
+        forEachWord(value, value.getValueTextRange(), str);
     }
 }

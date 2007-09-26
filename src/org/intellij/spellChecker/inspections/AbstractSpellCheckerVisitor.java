@@ -22,6 +22,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import org.intellij.spellChecker.util.Strings;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,35 +50,49 @@ public abstract class AbstractSpellCheckerVisitor extends PsiRecursiveElementVis
         this.inspectionManager = inspectionManager;
     }
 
-    protected List<ProblemDescriptor> inspect(PsiElement element, TextRange textRange, String word) {
+    protected List<ProblemDescriptor> inspect(@NotNull PsiElement element, @NotNull TextRange textRange, @NotNull String word) {
         return SpellCheckerInspector.inspectWithChangeTo(inspectionManager, element, textRange, word);
     }
 
-    protected void forEachWord(PsiElement element, String text) {
+    @NotNull
+    private static TextRange subRange(@NotNull TextRange range, int start, int end) {
+        return TextRange.from(range.getStartOffset() + start, end - start);
+    }
+
+    @NotNull
+    private static TextRange matcherRange(@NotNull TextRange range, @NotNull Matcher matcher) {
+        return subRange(range, matcher.start(), matcher.end());
+    }
+
+    protected void forEachWord(@NotNull PsiElement element, @NotNull String text) {
+        forEachWord(element, TextRange.from(0, text.length()), text);
+    }
+
+    protected void forEachWord(@NotNull PsiElement element, @NotNull TextRange range, @NotNull String text) {
         // Create a pattern to match breaks
         Matcher matcher = NON_SPACE.matcher(text);
         while (matcher.find()) {
-            visitNonSpace(element, matcher.start(), matcher.end());
+            visitNonSpace(element, matcherRange(range, matcher));
         }
     }
 
-    private void visitNonSpace(PsiElement element, int start, int end) {
-        if (end - start > 1) {
-            String text = element.getText().substring(start, end);
+    private void visitNonSpace(@NotNull PsiElement element, TextRange range) {
+        if (range.getLength() > 1) {
+            String text = range.substring(element.getText());
             if (!URL.matcher(text).find() && !COMPLEX.matcher(text).find()) {
                 Matcher matcher = WORD.matcher(text);
                 while (matcher.find()) {
-                    visitWord(element, start + matcher.start(), start + matcher.end());
+                    visitWord(element, matcherRange(range, matcher));
                 }
             }
         }
     }
 
-    private void visitWord(PsiElement element, int start, int end) {
-        if (end - start > 1) {
-            String word = element.getText().substring(start, end);
+    private void visitWord(@NotNull PsiElement element, TextRange range) {
+        if (range.getLength() > 1) {
+            String word = range.substring(element.getText());
             if (!Strings.isMixedCase(word)) {
-                List<ProblemDescriptor> list = inspect(element, new TextRange(start, end), word);
+                List<ProblemDescriptor> list = inspect(element, range, word);
                 if (list.size() > 0) {
                     if (problems == null) {
                         problems = new ArrayList<ProblemDescriptor>(list.size());
