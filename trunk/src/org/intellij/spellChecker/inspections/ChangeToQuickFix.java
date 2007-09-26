@@ -55,7 +55,7 @@ public class ChangeToQuickFix implements LocalQuickFix {
         PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
         PsiFile psiFile = descriptor.getPsiElement().getContainingFile();
         Document document = documentManager.getDocument(psiFile);
-        int psiElementOffset = descriptor.getPsiElement().getTextOffset();
+        int psiElementOffset = descriptor.getPsiElement().getTextRange().getStartOffset();
         if (document != null)
             document.replaceString(
                     psiElementOffset + textRange.getStartOffset(),
