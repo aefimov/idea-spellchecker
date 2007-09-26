@@ -23,6 +23,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import org.intellij.spellChecker.SpellCheckerManager;
 import org.intellij.spellChecker.util.SpellCheckerBundle;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +35,8 @@ import java.util.List;
  * @author Alexey Efimov
  */
 public class SpellCheckerInspector {
-    public static List<ProblemDescriptor> inspectWithChangeTo(InspectionManager inspectionManager, PsiElement element, TextRange textRange, String word) {
+    @NotNull
+    public static List<ProblemDescriptor> inspectWithChangeTo(@NotNull InspectionManager inspectionManager, @NotNull PsiElement element, @NotNull TextRange textRange, @NotNull String word) {
         SpellCheckerManager manager = SpellCheckerManager.getInstance();
         if (manager.hasProblem(word)) {
             List<String> suggestions = manager.getSuggestions(word);
@@ -53,25 +55,28 @@ public class SpellCheckerInspector {
         return Collections.emptyList();
     }
 
-    public static List<ProblemDescriptor> inspectWithRenameTo(InspectionManager inspectionManager, PsiElement element, TextRange textRange, String word) {
-        SpellCheckerManager manager = SpellCheckerManager.getInstance();
-        if (manager.hasProblem(word)) {
-            PsiElement child = element.findElementAt(textRange.getStartOffset());
-            if (child != null) {
-                List<String> suggestions = manager.getSuggestions(word);
-                List<LocalQuickFix> fixes = new ArrayList<LocalQuickFix>();
-                for (String suggestion : suggestions) {
-                    // Construct corrected method name
-                    TextRange subRange = textRange.shiftRight(-child.getStartOffsetInParent());
-                    fixes.add(new RenameToQuickFix(subRange.replace(child.getText(), suggestion)));
+    @NotNull
+    public static List<ProblemDescriptor> inspectWithRenameTo(@NotNull InspectionManager inspectionManager, @NotNull PsiElement element, @NotNull TextRange textRange, @NotNull String word) {
+        if (word.length() > 1) {
+            SpellCheckerManager manager = SpellCheckerManager.getInstance();
+            if (manager.hasProblem(word)) {
+                PsiElement child = element.findElementAt(textRange.getStartOffset());
+                if (child != null) {
+                    List<String> suggestions = manager.getSuggestions(word);
+                    List<LocalQuickFix> fixes = new ArrayList<LocalQuickFix>();
+                    for (String suggestion : suggestions) {
+                        // Construct corrected method name
+                        TextRange subRange = textRange.shiftRight(-child.getStartOffsetInParent());
+                        fixes.add(new RenameToQuickFix(subRange.replace(child.getText(), suggestion)));
+                    }
+                    fixes.add(new AddToDictionaryQuickFix(word));
+                    fixes.add(new IgnoreWordQuickFix(word));
+                    return Collections.singletonList(inspectionManager.createProblemDescriptor(
+                            element, textRange,
+                            SpellCheckerBundle.message("word.is.misspelled"),
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            fixes.toArray(new LocalQuickFix[fixes.size()])));
                 }
-                fixes.add(new AddToDictionaryQuickFix(word));
-                fixes.add(new IgnoreWordQuickFix(word));
-                return Collections.singletonList(inspectionManager.createProblemDescriptor(
-                        element, textRange,
-                        SpellCheckerBundle.message("word.is.misspelled"),
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        fixes.toArray(new LocalQuickFix[fixes.size()])));
             }
         }
         return Collections.emptyList();

@@ -19,7 +19,7 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.codeStyle.NameUtil;
 import org.intellij.spellChecker.util.SpellCheckerBundle;
@@ -32,11 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Inspection to check field names.
+ * Inspection to check class names.
  *
  * @author Alexey Efimov
  */
-public class FieldNameWithMistakesInspection extends LocalInspectionTool {
+public class ClassNameWithMistakesInspection extends LocalInspectionTool {
     @Nls
     @NotNull
     public String getGroupDisplayName() {
@@ -46,13 +46,13 @@ public class FieldNameWithMistakesInspection extends LocalInspectionTool {
     @Nls
     @NotNull
     public String getDisplayName() {
-        return SpellCheckerBundle.message("field.name.with.mistakes");
+        return SpellCheckerBundle.message("class.name.with.mistakes");
     }
 
     @NonNls
     @NotNull
     public String getShortName() {
-        return "FieldNameWithMistakes";
+        return "ClassNameWithMistakes";
     }
 
     public boolean isEnabledByDefault() {
@@ -60,30 +60,32 @@ public class FieldNameWithMistakesInspection extends LocalInspectionTool {
     }
 
     @Nullable
-    public ProblemDescriptor[] checkField(@NotNull PsiField field, @NotNull InspectionManager manager, boolean isOnTheFly) {
+    public ProblemDescriptor[] checkClass(@NotNull PsiClass aClass, @NotNull InspectionManager manager, boolean isOnTheFly) {
         List<ProblemDescriptor> problems = null;
-        String fieldName = field.getName();
-        if (fieldName != null) {
-            PsiIdentifier psiName = field.getNameIdentifier();
-            String[] words = NameUtil.nameToWords(fieldName);
-            int offsetInParent = psiName.getStartOffsetInParent();
-            int index = 0;
-            for (String word : words) {
-                int start = fieldName.indexOf(word, index);
-                int end = start + word.length();
-                List<ProblemDescriptor> list = SpellCheckerInspector.inspectWithRenameTo(
-                        manager, field, new TextRange(offsetInParent + start, offsetInParent + end), word
-                );
-                if (list.size() > 0) {
-                    if (problems == null) {
-                        problems = new ArrayList<ProblemDescriptor>(list.size());
+        String className = aClass.getName();
+        if (className != null) {
+            PsiIdentifier psiName = aClass.getNameIdentifier();
+            if (psiName != null) {
+                String[] words = NameUtil.nameToWords(className);
+                int offsetInParent = psiName.getStartOffsetInParent();
+                int index = 0;
+                for (String word : words) {
+                    int start = className.indexOf(word, index);
+                    int end = start + word.length();
+                    List<ProblemDescriptor> list = SpellCheckerInspector.inspectWithRenameTo(
+                            manager, aClass, new TextRange(offsetInParent + start, offsetInParent + end), word
+                    );
+                    if (list.size() > 0) {
+                        if (problems == null) {
+                            problems = new ArrayList<ProblemDescriptor>(list.size());
+                        }
+                        problems.addAll(list);
                     }
-                    problems.addAll(list);
+                    index = end;
                 }
-                index = end;
-            }
 
-            return problems != null ? problems.toArray(new ProblemDescriptor[problems.size()]) : null;
+                return problems != null ? problems.toArray(new ProblemDescriptor[problems.size()]) : null;
+            }
         }
         return null;
     }
