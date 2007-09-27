@@ -15,12 +15,18 @@
  */
 package org.intellij.spellChecker;
 
+import com.intellij.codeHighlighting.HighlightDisplayLevel;
+import com.intellij.codeInsight.daemon.impl.HighlightInfoType;
+import com.intellij.codeInsight.daemon.impl.SeverityRegistrar;
 import com.intellij.codeInspection.InspectionToolProvider;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.editor.colors.CodeInsightColors;
+import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.intellij.spellChecker.engine.SpellChecker;
 import org.intellij.spellChecker.engine.SpellCheckerFactory;
@@ -28,12 +34,11 @@ import org.intellij.spellChecker.inspections.*;
 import org.intellij.spellChecker.util.Strings;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Spell checker inspection provider.
@@ -49,6 +54,8 @@ import java.util.Set;
         )}
 )
 public final class SpellCheckerManager implements ApplicationComponent, InspectionToolProvider, PersistentStateComponent<SpellCheckerManager.State> {
+    public static final HighlightSeverity SPELLING = new HighlightSeverity("SPELLING", HighlightSeverity.WARNING.myVal);
+
     private static final int MAX_SUGGESTIONS_THRESHOLD = 10;
 
     public static SpellCheckerManager getInstance() {
@@ -68,12 +75,47 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
     private final State state = new State();
 
     public void initComponent() {
+        initSeverity();
+
         for (String word : state.IGNORED_WORDS) {
             spellChecker.ignoreAll(word);
         }
         for (String word : state.USER_DICTIONARY_WORDS) {
             spellChecker.addToDictionary(word);
         }
+    }
+
+    private void initSeverity() {
+        SeverityRegistrar severityRegistrar = SeverityRegistrar.getInstance();
+
+        if (!severityRegistrar.isSeverityValid(SPELLING)) {
+            TextAttributes warningTextAttr = CodeInsightColors.WARNINGS_ATTRIBUTES.getDefaultAttributes();
+
+            HighlightInfoType.HighlightInfoTypeImpl hiti =
+                    new HighlightInfoType.HighlightInfoTypeImpl(SPELLING, CodeInsightColors.WARNINGS_ATTRIBUTES);
+
+
+            if (warningTextAttr != null) {
+                SeverityRegistrar.SeverityBasedTextAttributes attributes =
+                        new SeverityRegistrar.SeverityBasedTextAttributes(warningTextAttr, hiti);
+
+                List<String> severites = new ArrayList<String>();
+                for (int i = 0; i < severityRegistrar.getSeveritiesCount(); i++) {
+                    severites.add(severityRegistrar.getSeverityByIndex(i).myName);
+                }
+
+                severityRegistrar.registerSeverity(attributes, Color.YELLOW);
+
+                severites.add(SPELLING.myName);
+                severityRegistrar.setOrder(severites);
+            }
+        }
+
+        HighlightDisplayLevel.registerSeverity(SPELLING, CodeInsightColors.WARNINGS_ATTRIBUTES.getDefaultAttributes().getErrorStripeColor());
+    }
+
+    public static HighlightDisplayLevel getHighlightDisplayLevel() {
+        return HighlightDisplayLevel.find(SPELLING);
     }
 
     public void disposeComponent() {

@@ -15,11 +15,13 @@
  */
 package org.intellij.spellChecker.inspections;
 
+import com.intellij.codeHighlighting.HighlightDisplayLevel;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.lang.Language;
 import com.intellij.psi.PsiFile;
+import org.intellij.spellChecker.SpellCheckerManager;
 import org.intellij.spellChecker.util.SpellCheckerBundle;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
@@ -51,6 +53,16 @@ public class AdvancedPropertiesSpellingInspection extends LocalInspectionTool {
     @NotNull
     public String getShortName() {
         return "AdvancedPropertiesSpellingInspection";
+    }
+
+    @NotNull
+    public HighlightDisplayLevel getDefaultLevel() {
+        HighlightDisplayLevel level = SpellCheckerManager.getHighlightDisplayLevel();
+        if (level != null)
+            return level;
+
+        return super.getDefaultLevel();
+
     }
 
     @Nullable
