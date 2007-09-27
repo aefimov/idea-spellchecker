@@ -48,7 +48,7 @@ public class AdvancedXmlSpellingInspection extends LocalInspectionTool {
     @NonNls
     @NotNull
     public String getShortName() {
-        return "TagTextWithMistakes";
+        return "AdvancedXmlSpelling";
     }
 
     public boolean isEnabledByDefault() {

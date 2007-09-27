@@ -52,7 +52,7 @@ public class AdvancedPropertiesSpellingInspection extends LocalInspectionTool {
     @NonNls
     @NotNull
     public String getShortName() {
-        return "AdvancedPropertiesSpellingInspection";
+        return "AdvancedPropertiesSpelling";
     }
 
     @NotNull
