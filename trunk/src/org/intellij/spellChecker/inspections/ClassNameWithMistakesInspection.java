@@ -63,12 +63,7 @@ public class ClassNameWithMistakesInspection extends LocalInspectionTool {
 
     @NotNull
     public HighlightDisplayLevel getDefaultLevel() {
-        HighlightDisplayLevel level = SpellCheckerManager.getHighlightDisplayLevel();
-        if (level != null)
-            return level;
-
-        return super.getDefaultLevel();
-
+        return SpellCheckerManager.getHighlightDisplayLevel();
     }
 
     @Nullable
