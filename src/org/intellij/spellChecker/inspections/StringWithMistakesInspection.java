@@ -15,10 +15,12 @@
  */
 package org.intellij.spellChecker.inspections;
 
+import com.intellij.codeHighlighting.HighlightDisplayLevel;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.psi.PsiFile;
+import org.intellij.spellChecker.SpellCheckerManager;
 import org.intellij.spellChecker.util.SpellCheckerBundle;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
@@ -51,6 +53,11 @@ public class StringWithMistakesInspection extends LocalInspectionTool {
 
     public boolean isEnabledByDefault() {
         return true;
+    }
+
+    @NotNull
+    public HighlightDisplayLevel getDefaultLevel() {
+        return SpellCheckerManager.getHighlightDisplayLevel();
     }
 
     @Nullable

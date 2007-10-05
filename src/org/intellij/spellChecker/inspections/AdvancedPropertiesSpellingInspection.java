@@ -55,14 +55,13 @@ public class AdvancedPropertiesSpellingInspection extends LocalInspectionTool {
         return "AdvancedPropertiesSpelling";
     }
 
+    public boolean isEnabledByDefault() {
+        return true;
+    }
+
     @NotNull
     public HighlightDisplayLevel getDefaultLevel() {
-        HighlightDisplayLevel level = SpellCheckerManager.getHighlightDisplayLevel();
-        if (level != null)
-            return level;
-
-        return super.getDefaultLevel();
-
+        return SpellCheckerManager.getHighlightDisplayLevel();
     }
 
     @Nullable

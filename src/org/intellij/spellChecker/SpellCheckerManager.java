@@ -26,7 +26,12 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.editor.colors.CodeInsightColors;
+import com.intellij.openapi.editor.colors.TextAttributesKey;
+import com.intellij.openapi.editor.markup.EffectType;
 import com.intellij.openapi.editor.markup.TextAttributes;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.project.ProjectManagerListener;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.intellij.spellChecker.engine.SpellChecker;
 import org.intellij.spellChecker.engine.SpellCheckerFactory;
@@ -53,13 +58,19 @@ import java.util.List;
                 file = "$APP_CONFIG$/spellchecker.xml"
         )}
 )
-public final class SpellCheckerManager implements ApplicationComponent, InspectionToolProvider, PersistentStateComponent<SpellCheckerManager.State> {
-    public static final HighlightSeverity SPELLING = new HighlightSeverity("SPELLING", HighlightSeverity.INFO.myVal);
-
+public final class SpellCheckerManager implements ApplicationComponent, InspectionToolProvider, PersistentStateComponent<SpellCheckerManager.State>, ProjectManagerListener {
+    private static final HighlightSeverity SPELLING = new HighlightSeverity("SPELLING", HighlightSeverity.INFO.myVal);
+    private static final TextAttributesKey SPELLING_ATTRIBUTES = TextAttributesKey.createTextAttributesKey("SPELLING_ATTRIBUTES");
     private static final int MAX_SUGGESTIONS_THRESHOLD = 10;
+
+    private final ProjectManager projectManager;
 
     public static SpellCheckerManager getInstance() {
         return ApplicationManager.getApplication().getComponent(SpellCheckerManager.class);
+    }
+
+    public SpellCheckerManager(ProjectManager projectManager) {
+        this.projectManager = projectManager;
     }
 
     private static final Class[] INSPECTIONS = {
@@ -77,7 +88,11 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
     private final State state = new State();
 
     public void initComponent() {
-        initSeverity();
+        projectManager.addProjectManagerListener(this);
+
+        initSeverity(SeverityRegistrar.getInstance());
+        TextAttributes sta = getSpellingTextAttributes();
+        HighlightDisplayLevel.registerSeverity(SPELLING, sta.getErrorStripeColor());
 
         for (String word : ejectAll(state.IGNORED_WORDS)) {
             ignoreAll(word);
@@ -87,46 +102,68 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
         }
     }
 
+    public void projectOpened(Project project) {
+        initSeverity(SeverityRegistrar.getInstance(project));
+    }
+
+    public boolean canCloseProject(Project project) {
+        return true;
+    }
+
+    public void projectClosed(Project project) {
+        disposeSeverity(SeverityRegistrar.getInstance(project));
+    }
+
+    public void projectClosing(Project project) {
+    }
+
     private HashSet<String> ejectAll(Set<String> from) {
         HashSet<String> words = new HashSet<String>(from);
         from.clear();
         return words;
     }
 
-    private void initSeverity() {
-        SeverityRegistrar severityRegistrar = SeverityRegistrar.getInstance();
-
+    private void initSeverity(SeverityRegistrar severityRegistrar) {
+        TextAttributes sta = getSpellingTextAttributes();
         if (!severityRegistrar.isSeverityValid(SPELLING)) {
-            TextAttributes warningTextAttr = CodeInsightColors.WARNINGS_ATTRIBUTES.getDefaultAttributes();
+            HighlightInfoType.HighlightInfoTypeImpl hiti = new HighlightInfoType.HighlightInfoTypeImpl(SPELLING, SPELLING_ATTRIBUTES);
+            SeverityRegistrar.SeverityBasedTextAttributes attributes = new SeverityRegistrar.SeverityBasedTextAttributes(sta, hiti);
 
-            HighlightInfoType.HighlightInfoTypeImpl hiti =
-                    new HighlightInfoType.HighlightInfoTypeImpl(SPELLING, CodeInsightColors.WARNINGS_ATTRIBUTES);
-
-
-            if (warningTextAttr != null) {
-                SeverityRegistrar.SeverityBasedTextAttributes attributes =
-                        new SeverityRegistrar.SeverityBasedTextAttributes(warningTextAttr, hiti);
-
-                List<String> severites = new ArrayList<String>();
-                for (int i = 0; i < severityRegistrar.getSeveritiesCount(); i++) {
-                    severites.add(severityRegistrar.getSeverityByIndex(i).myName);
-                }
-
-                severityRegistrar.registerSeverity(attributes, Color.YELLOW);
-
-                severites.add(SPELLING.myName);
-                severityRegistrar.setOrder(severites);
+            List<String> severites = new ArrayList<String>();
+            for (int i = 0; i < severityRegistrar.getSeveritiesCount(); i++) {
+                severites.add(severityRegistrar.getSeverityByIndex(i).myName);
             }
-        }
 
-        HighlightDisplayLevel.registerSeverity(SPELLING, CodeInsightColors.INFORMATION_ATTRIBUTES.getDefaultAttributes().getErrorStripeColor());
+            severityRegistrar.registerSeverity(attributes, sta.getErrorStripeColor());
+
+            severites.add(SPELLING.myName);
+            severityRegistrar.setOrder(severites);
+        }
     }
 
+    private void disposeSeverity(SeverityRegistrar severityRegistrar) {
+        severityRegistrar.unregisterSeverity(SPELLING);
+    }
+
+    @NotNull
+    private static TextAttributes getSpellingTextAttributes() {
+        TextAttributes infoAttrs = CodeInsightColors.INFO_ATTRIBUTES.getDefaultAttributes();
+        if (infoAttrs == null) {
+            infoAttrs = new TextAttributes(null, null, new Color(204, 204, 204), EffectType.WAVE_UNDERSCORE, 0);
+            infoAttrs.setErrorStripeColor(new Color(255, 255, 204));
+        }
+        return infoAttrs;
+    }
+
+    @NotNull
     public static HighlightDisplayLevel getHighlightDisplayLevel() {
-        return HighlightDisplayLevel.find(SPELLING);
+        HighlightDisplayLevel level = HighlightDisplayLevel.find(SPELLING);
+        return level != null ? level : HighlightDisplayLevel.WARNING;
     }
 
     public void disposeComponent() {
+        disposeSeverity(SeverityRegistrar.getInstance());
+        projectManager.removeProjectManagerListener(this);
     }
 
     @NotNull
