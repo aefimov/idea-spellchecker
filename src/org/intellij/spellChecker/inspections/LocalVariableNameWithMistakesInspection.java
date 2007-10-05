@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Alexey Efimov
  */
-public class StringWithMistakesInspection extends LocalInspectionTool {
+public class LocalVariableNameWithMistakesInspection extends LocalInspectionTool {
     @Nls
     @NotNull
     public String getGroupDisplayName() {
@@ -40,13 +40,13 @@ public class StringWithMistakesInspection extends LocalInspectionTool {
     @Nls
     @NotNull
     public String getDisplayName() {
-        return SpellCheckerBundle.message("string.value.with.mistakes");
+        return SpellCheckerBundle.message("local.variable.name.with.mistakes");
     }
 
     @NonNls
     @NotNull
     public String getShortName() {
-        return "StringWithMistakes";
+        return "LocalVariableNameWithMistakes";
     }
 
     public boolean isEnabledByDefault() {
@@ -55,7 +55,7 @@ public class StringWithMistakesInspection extends LocalInspectionTool {
 
     @Nullable
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
-        StringsSpellCheckerVisitor visitor = new StringsSpellCheckerVisitor(manager);
+        LocalVariableNameSpellCheckerVisitor visitor = new LocalVariableNameSpellCheckerVisitor(manager);
         file.accept(visitor);
         return visitor.getProblems();
     }
