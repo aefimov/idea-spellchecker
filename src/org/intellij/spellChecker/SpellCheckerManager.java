@@ -79,12 +79,18 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
     public void initComponent() {
         initSeverity();
 
-        for (String word : state.IGNORED_WORDS) {
-            spellChecker.ignoreAll(word);
+        for (String word : ejectAll(state.IGNORED_WORDS)) {
+            ignoreAll(word);
         }
-        for (String word : state.USER_DICTIONARY_WORDS) {
-            spellChecker.addToDictionary(word);
+        for (String word : ejectAll(state.USER_DICTIONARY_WORDS)) {
+            addToDictionary(word);
         }
+    }
+
+    private HashSet<String> ejectAll(Set<String> from) {
+        HashSet<String> words = new HashSet<String>(from);
+        from.clear();
+        return words;
     }
 
     private void initSeverity() {
@@ -179,14 +185,16 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
         spellChecker.addDictionary(inputStream);
     }
 
-    public void addToDictionary(String word) {
-        state.USER_DICTIONARY_WORDS.add(word);
-        spellChecker.addToDictionary(word);
+    public void addToDictionary(@NotNull String word) {
+        String lowerCased = word.toLowerCase();
+        state.USER_DICTIONARY_WORDS.add(lowerCased);
+        spellChecker.addToDictionary(lowerCased);
     }
 
-    public void ignoreAll(String word) {
-        state.IGNORED_WORDS.add(word);
-        spellChecker.ignoreAll(word);
+    public void ignoreAll(@NotNull String word) {
+        String lowerCased = word.toLowerCase();
+        state.IGNORED_WORDS.add(lowerCased);
+        spellChecker.ignoreAll(lowerCased);
     }
 
     public final static class State {
