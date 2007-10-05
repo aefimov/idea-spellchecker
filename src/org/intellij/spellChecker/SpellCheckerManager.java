@@ -54,7 +54,7 @@ import java.util.List;
         )}
 )
 public final class SpellCheckerManager implements ApplicationComponent, InspectionToolProvider, PersistentStateComponent<SpellCheckerManager.State> {
-    public static final HighlightSeverity SPELLING = new HighlightSeverity("SPELLING", HighlightSeverity.WARNING.myVal);
+    public static final HighlightSeverity SPELLING = new HighlightSeverity("SPELLING", HighlightSeverity.INFO.myVal);
 
     private static final int MAX_SUGGESTIONS_THRESHOLD = 10;
 
@@ -68,7 +68,8 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
             MethodNameWithMistakesInspection.class,
             FieldNameWithMistakesInspection.class,
             AdvancedXmlSpellingInspection.class,
-            AdvancedPropertiesSpellingInspection.class
+            AdvancedPropertiesSpellingInspection.class,
+            StringWithMistakesInspection.class
     };
 
     private final SpellChecker spellChecker = SpellCheckerFactory.create();
@@ -111,7 +112,7 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
             }
         }
 
-        HighlightDisplayLevel.registerSeverity(SPELLING, CodeInsightColors.WARNINGS_ATTRIBUTES.getDefaultAttributes().getErrorStripeColor());
+        HighlightDisplayLevel.registerSeverity(SPELLING, CodeInsightColors.INFORMATION_ATTRIBUTES.getDefaultAttributes().getErrorStripeColor());
     }
 
     public static HighlightDisplayLevel getHighlightDisplayLevel() {
