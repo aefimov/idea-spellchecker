@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,13 +95,26 @@ public abstract class AbstractSpellCheckerVisitor extends PsiRecursiveElementVis
             if (!Strings.isMixedCase(word)) {
                 List<ProblemDescriptor> list = inspect(element, range, word);
                 if (list.size() > 0) {
-                    if (problems == null) {
-                        problems = new ArrayList<ProblemDescriptor>(list.size());
-                    }
-                    problems.addAll(list);
+                    addAll(list);
                 }
             }
         }
+    }
+
+    private void assertInit() {
+        if (problems == null) {
+            problems = new ArrayList<ProblemDescriptor>();
+        }
+    }
+
+    protected final void addAll(@NotNull Collection<ProblemDescriptor> descriptors) {
+        assertInit();
+        problems.addAll(descriptors);
+    }
+
+    protected final void add(@NotNull ProblemDescriptor descriptor) {
+        assertInit();
+        problems.add(descriptor);
     }
 
     public ProblemDescriptor[] getProblems() {
