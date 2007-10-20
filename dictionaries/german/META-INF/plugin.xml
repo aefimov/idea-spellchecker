@@ -1,0 +1,16 @@
+<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
+<idea-plugin>
+    <name>Spell Checker German Dictionary</name>
+    <id>SpellChecker-Dict-German</id>
+    <description>Standard german dictionary for Spell Checker plugin</description>
+    <depends>SpellChecker</depends>
+    <version>0.1</version>
+    <vendor>Sergiy Dubovik, Alexey Efimov</vendor>
+    <idea-version since-build="7269"/>
+
+    <application-components>
+        <component>
+            <implementation-class>org.intellij.spellChecker.SpellCheckerGermanDictionary</implementation-class>
+        </component>
+    </application-components>
+</idea-plugin>
