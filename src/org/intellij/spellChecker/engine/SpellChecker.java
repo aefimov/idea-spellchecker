@@ -36,4 +36,9 @@ public interface SpellChecker {
     boolean isCorrect(String word);
 
     List<String> getSuggestions(String word, int threshold);
+
+    /**
+     * This method must clean up user dictionary words and ignored words.
+     */
+    void reset();
 }

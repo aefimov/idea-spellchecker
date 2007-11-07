@@ -8,7 +8,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="spellchecker" />
+    <orderEntry type="module" module-name="spellchecker" exported="" />
     <orderEntryProperties />
   </component>
 </module>

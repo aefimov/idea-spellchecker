@@ -16,16 +16,13 @@
 package org.intellij.spellChecker;
 
 import com.intellij.codeHighlighting.HighlightDisplayLevel;
-import com.intellij.codeInspection.InspectionToolProvider;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ApplicationComponent;
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
-import com.intellij.util.xmlb.XmlSerializerUtil;
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import org.intellij.spellChecker.engine.SpellChecker;
 import org.intellij.spellChecker.engine.SpellCheckerFactory;
-import org.intellij.spellChecker.inspections.*;
+import org.intellij.spellChecker.options.SpellCheckerConfiguration;
 import org.intellij.spellChecker.util.Strings;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,73 +38,24 @@ import java.util.Set;
  *
  * @author Sergiy Dubovik, Alexey Efimov
  */
-@State(
-        name = "SpellChecker",
-        storages = {
-        @Storage(
-                id = "spellchecker",
-                file = "$APP_CONFIG$/spellchecker.xml"
-        )}
-)
-public final class SpellCheckerManager implements ApplicationComponent, InspectionToolProvider, PersistentStateComponent<SpellCheckerManager.State> {
+public final class SpellCheckerManager {
     private static final int MAX_SUGGESTIONS_THRESHOLD = 10;
 
     public static SpellCheckerManager getInstance() {
-        return ApplicationManager.getApplication().getComponent(SpellCheckerManager.class);
+        return ServiceManager.getService(SpellCheckerManager.class);
     }
 
-    private static final Class[] INSPECTIONS = {
-            CommentsWithMistakesInspection.class,
-            ClassNameWithMistakesInspection.class,
-            MethodNameWithMistakesInspection.class,
-            FieldNameWithMistakesInspection.class,
-            LocalVariableNameWithMistakesInspection.class,
-            StringWithMistakesInspection.class,
-            AdvancedXmlSpellingInspection.class,
-            AdvancedPropertiesSpellingInspection.class,
-    };
-
+    private final SpellCheckerConfiguration configuration;
     private final SpellChecker spellChecker = SpellCheckerFactory.create();
-    private final State state = new State();
 
-    public void initComponent() {
-        for (String word : ejectAll(state.IGNORED_WORDS)) {
-            ignoreAll(word);
-        }
-        for (String word : ejectAll(state.USER_DICTIONARY_WORDS)) {
-            addToDictionary(word);
-        }
-    }
-
-    private HashSet<String> ejectAll(Set<String> from) {
-        HashSet<String> words = new HashSet<String>(from);
-        from.clear();
-        return words;
+    public SpellCheckerManager(SpellCheckerConfiguration configuration) {
+        this.configuration = configuration;
+        reloadConfiguration();
     }
 
     @NotNull
     public static HighlightDisplayLevel getHighlightDisplayLevel() {
         return HighlightDisplayLevel.INFO;
-    }
-
-    public void disposeComponent() {
-    }
-
-    @NotNull
-    public String getComponentName() {
-        return "SpellChecker";
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public void loadState(State state) {
-        XmlSerializerUtil.copyBean(state, this.state);
-    }
-
-    public Class[] getInspectionClasses() {
-        return INSPECTIONS;
     }
 
     @NotNull
@@ -156,18 +104,43 @@ public final class SpellCheckerManager implements ApplicationComponent, Inspecti
 
     public void addToDictionary(@NotNull String word) {
         String lowerCased = word.toLowerCase();
-        state.USER_DICTIONARY_WORDS.add(lowerCased);
+        configuration.USER_DICTIONARY_WORDS.add(lowerCased);
         spellChecker.addToDictionary(lowerCased);
     }
 
     public void ignoreAll(@NotNull String word) {
         String lowerCased = word.toLowerCase();
-        state.IGNORED_WORDS.add(lowerCased);
+        configuration.IGNORED_WORDS.add(lowerCased);
         spellChecker.ignoreAll(lowerCased);
     }
 
-    public final static class State {
-        public Set<String> USER_DICTIONARY_WORDS = new HashSet<String>();
-        public Set<String> IGNORED_WORDS = new HashSet<String>();
+    public final Set<String> getIgnoredWords() {
+        return configuration.IGNORED_WORDS;
+    }
+
+    public void reloadConfiguration() {
+        spellChecker.reset();
+        for (String word : ejectAll(configuration.IGNORED_WORDS)) {
+            ignoreAll(word);
+        }
+        for (String word : ejectAll(configuration.USER_DICTIONARY_WORDS)) {
+            addToDictionary(word);
+        }
+        restartInspections();
+    }
+
+    private static void restartInspections() {
+        Project[] projects = ProjectManager.getInstance().getOpenProjects();
+        for (Project project : projects) {
+            if (project.isOpen() && !project.isDefault()) {
+                DaemonCodeAnalyzer.getInstance(project).restart();
+            }
+        }
+    }
+
+    private HashSet<String> ejectAll(Set<String> from) {
+        HashSet<String> words = new HashSet<String>(from);
+        from.clear();
+        return words;
     }
 }

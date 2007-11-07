@@ -3,14 +3,26 @@
     <name>Spell Checker</name>
     <id>SpellChecker</id>
     <description>Integrates spell checker jazzy into IDEA as inspection</description>
-    <version>0.2</version>
+    <version>0.2.1</version>
     <vendor>Sergiy Dubovik, Alexey Efimov</vendor>
     <idea-version since-build="7269"/>
 
-    <application-components>
-        <component>
-            <implementation-class>org.intellij.spellChecker.SpellCheckerManager</implementation-class>
-        </component>
-    </application-components>
+    <extensions xmlns="com.intellij">
+        <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
+
+        <applicationService serviceInterface="org.intellij.spellChecker.options.SpellCheckerConfiguration"
+                            serviceImplementation="org.intellij.spellChecker.options.SpellCheckerConfiguration"/>
+        <applicationService serviceInterface="org.intellij.spellChecker.SpellCheckerManager"
+                            serviceImplementation="org.intellij.spellChecker.SpellCheckerManager"/>
+
+        <!-- Does not work yet. See http://www.jetbrains.net/jira/browse/IDEA-16223 -->
+        <!--
+        <exportable serviceInterface="org.intellij.spellChecker.options.SpellCheckerConfiguration"/>
+        -->
+
+        <applicationConfigurable implementation="org.intellij.spellChecker.options.SpellCheckerConfigurable"/>
+        <inspectionToolProvider
+                implementation="org.intellij.spellChecker.inspections.SpellCheckerInspectionToolProvider"/>
+    </extensions>
 
 </idea-plugin>
