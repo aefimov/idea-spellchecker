@@ -60,5 +60,14 @@ final class JazzySpellChecker implements SpellChecker {
         return strings;
     }
 
+    public void reset() {
+        delegate.reset();
+        try {
+            delegate.setUserDictionary(new SpellDictionaryHashMap());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private final com.swabunga.spell.event.SpellChecker delegate = new com.swabunga.spell.event.SpellChecker();
 }
