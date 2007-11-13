@@ -25,7 +25,7 @@ import java.util.List;
  * @author Alexey Efimov
  */
 public interface SpellChecker {
-    void addDictionary(InputStream is) throws IOException;
+    void addDictionary(InputStream is, String encoding) throws IOException;
 
     void addToDictionary(String word);
 

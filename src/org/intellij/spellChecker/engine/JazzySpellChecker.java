@@ -30,15 +30,8 @@ import java.util.List;
  * @author Alexey Efimov
  */
 final class JazzySpellChecker implements SpellChecker {
-    public void addDictionary(InputStream is) throws IOException {
-        /*
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, "utf-8"));
-        String s1 = reader.readLine();
-        String s2 = reader.readLine();
-        String s3 = reader.readLine();
-        reader.close();
-        */
-        delegate.addDictionary(new SpellDictionaryHashMap(new InputStreamReader(is, "utf-8")));
+    public void addDictionary(InputStream is, String encoding) throws IOException {
+        delegate.addDictionary(new SpellDictionaryHashMap(new InputStreamReader(is, encoding)));
     }
 
     public void addToDictionary(String word) {
