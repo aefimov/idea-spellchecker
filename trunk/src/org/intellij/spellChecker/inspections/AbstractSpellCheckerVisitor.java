@@ -40,7 +40,7 @@ public abstract class AbstractSpellCheckerVisitor extends PsiRecursiveElementVis
     @NonNls
     private static final Pattern NON_SPACE = Pattern.compile("\\S+");
     @NonNls
-    private static final Pattern WORD = Pattern.compile("\\b\\p{Alpha}+\\b");
+    private static final Pattern WORD = Pattern.compile("\\b\\p{L}+\\b");
     @NonNls
     private static final Pattern URL = Pattern.compile("(https?|ftp|mailto)\\:\\/\\/");
     @NonNls
