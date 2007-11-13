@@ -25,6 +25,7 @@ import org.intellij.spellChecker.engine.SpellCheckerFactory;
 import org.intellij.spellChecker.options.SpellCheckerConfiguration;
 import org.intellij.spellChecker.util.Strings;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -110,7 +111,7 @@ public final class SpellCheckerManager {
      * @param encoding    Encoding
      * @throws java.io.IOException if dictionary load with problems
      */
-    public void addDictionary(@NotNull InputStream inputStream, String encoding) throws IOException {
+    public void addDictionary(@NotNull InputStream inputStream, @NonNls String encoding) throws IOException {
         spellChecker.addDictionary(inputStream, encoding);
     }
 

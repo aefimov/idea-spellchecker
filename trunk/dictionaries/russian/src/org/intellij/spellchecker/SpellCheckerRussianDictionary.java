@@ -33,7 +33,7 @@ public class SpellCheckerRussianDictionary implements ApplicationComponent {
         InputStream is = SpellCheckerRussianDictionary.class.getResourceAsStream(DICT_URL);
         if (is != null) {
             try {
-                manager.addDictionary(is);
+                manager.addDictionary(is, "utf-8");
             } catch (IOException e) {
                 LOG.warn(e);
             }
