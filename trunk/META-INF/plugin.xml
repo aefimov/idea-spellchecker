@@ -26,11 +26,12 @@
         <applicationConfigurable implementation="org.intellij.spellChecker.options.SpellCheckerConfigurable"/>
         <inspectionToolProvider
                 implementation="org.intellij.spellChecker.inspections.SpellCheckerInspectionToolProvider"/>
-    </extensions>    
+    </extensions>
     <actions>
-        <action id="JazzyCompletion" class="org.intellij.spellChecker.JazzyCompletion" text="Jazzy Completion"
-                description="Jazzy Completion">
-            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt O"/>
+        <action id="JazzyCompletion" class="org.intellij.spellChecker.actions.SpellCheckerCompletion"
+                text="Spell Checker Word Completion"
+                description="Completion word from spelling dictionary">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt s"/>
         </action>
     </actions>
 
