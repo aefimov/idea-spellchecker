@@ -32,7 +32,7 @@ public class SpellCheckerGermanDictionary implements ApplicationComponent {
         InputStream is = SpellCheckerGermanDictionary.class.getResourceAsStream(DICT_URL);
         if (is != null) {
             try {
-                manager.addDictionary(is);
+                manager.addDictionary(is, "utf-8");
             } catch (IOException e) {
                 LOG.warn(e);
             }
