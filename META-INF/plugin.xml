@@ -8,7 +8,10 @@
     <idea-version since-build="7269"/>
 
     <extensions xmlns="com.intellij">
+        <!-- Not good to fill JetBrains JIRA :) -->
+        <!--
         <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
+        -->
 
         <applicationService serviceInterface="org.intellij.spellChecker.options.SpellCheckerConfiguration"
                             serviceImplementation="org.intellij.spellChecker.options.SpellCheckerConfiguration"/>
