@@ -364,6 +364,7 @@
       <module fileurl="file://$PROJECT_DIR$/spellchecker.iml" filepath="$PROJECT_DIR$/spellchecker.iml" />
       <module fileurl="file://$PROJECT_DIR$/dictionaries/english/spellchecker-dict-english.iml" filepath="$PROJECT_DIR$/dictionaries/english/spellchecker-dict-english.iml" />
       <module fileurl="file://$PROJECT_DIR$/dictionaries/german/spellchecker-dict-german.iml" filepath="$PROJECT_DIR$/dictionaries/german/spellchecker-dict-german.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dictionaries/russian/spellchecker-dict-russian.iml" filepath="$PROJECT_DIR$/dictionaries/russian/spellchecker-dict-russian.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="idea" project-jdk-type="IDEA JDK">
@@ -393,6 +394,25 @@
     <option name="ALTERNATIVE_WORKING_PATH" value="" />
     <option name="LOCK_ON_CHECKOUT" value="false" />
     <option name="UNLOCK_ON_CHECKIN" value="false" />
+  </component>
+  <component name="SvnBranchConfigurationManager">
+    <option name="myConfigurationMap">
+      <map>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchUrls">
+                <list>
+                  <option value="https://idea-spellchecker.googlecode.com/svn/branches" />
+                  <option value="https://idea-spellchecker.googlecode.com/svn/tags" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="https://idea-spellchecker.googlecode.com/svn/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="TeamCityRootDirectoryHolder">
     <option name="myRelativeRootDirectory" />

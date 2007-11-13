@@ -4,9 +4,18 @@
     <id>SpellChecker-Dict-German</id>
     <description>Standard german dictionary for Spell Checker plugin</description>
     <depends>SpellChecker</depends>
-    <version>0.1</version>
+    <version>0.2</version>
     <vendor>Sergiy Dubovik, Alexey Efimov</vendor>
     <idea-version since-build="7269"/>
+
+    <change-notes>
+        <![CDATA[
+        <ul>
+		    <u><b>Version 0.2 changes</b></u>
+		    <li>Dictionary converted to UTF-8, if you had problems with umlauts - update.</li>
+	    </ul>
+        ]]>
+    </change-notes>
 
     <application-components>
         <component>
