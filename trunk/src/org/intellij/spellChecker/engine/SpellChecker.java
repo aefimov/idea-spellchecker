@@ -15,9 +15,13 @@
  */
 package org.intellij.spellChecker.engine;
 
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Spell checker.
@@ -25,17 +29,21 @@ import java.util.List;
  * @author Alexey Efimov
  */
 public interface SpellChecker {
-    void addDictionary(InputStream is, String encoding) throws IOException;
+    void addDictionary(@NotNull InputStream is, @NonNls String encoding, @NotNull Locale locale) throws IOException;
 
-    void addToDictionary(String word);
+    void addToDictionary(@NotNull String word);
 
-    void ignoreAll(String word);
+    void ignoreAll(@NotNull String word);
 
-    boolean isIgnored(String word);
+    boolean isIgnored(@NotNull String word);
 
-    boolean isCorrect(String word);
+    boolean isCorrect(@NotNull String word);
 
-    List<String> getSuggestions(String word, int threshold);
+    @NotNull
+    List<String> getSuggestions(@NotNull String word, int threshold);
+
+    @NotNull
+    List<String> getVariants(@NotNull String prefix);
 
     /**
      * This method must clean up user dictionary words and ignored words.

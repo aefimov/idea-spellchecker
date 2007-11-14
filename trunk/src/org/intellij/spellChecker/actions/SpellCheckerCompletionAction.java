@@ -17,11 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Completion for spell checker.
+ * Completion action for spell checker.
  *
  * @author Sergiy Dubovik
  */
-public final class SpellCheckerCompletion extends AnAction {
+public final class SpellCheckerCompletionAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getData(DataKeys.PROJECT);
         Editor editor = e.getData(DataKeys.EDITOR);
@@ -42,17 +42,19 @@ public final class SpellCheckerCompletion extends AnAction {
                     ch = editor.getDocument().getCharsSequence().charAt(documentOffset);
                 }
 
-                String word = buffer.reverse().toString();
-                List<String> suggestions = SpellCheckerManager.getInstance().getSuggestions(word);
+                String prefix = buffer.reverse().toString();
+                List<String> variants = SpellCheckerManager.getInstance().getVariants(prefix);
                 List<LookupItem<String>> lookupItems = new ArrayList<LookupItem<String>>();
-                for (String suggestion : suggestions) {
-                    lookupItems.add(new LookupItem<String>(suggestion, suggestion));
+                for (String variant : variants) {
+                    lookupItems.add(new LookupItem<String>(variant, variant));
                 }
 
                 LookupItem[] items = new LookupItem[lookupItems.size()];
                 items = lookupItems.toArray(items);
                 LookupManager lookupManager = LookupManager.getInstance(project);
-                lookupManager.showLookup(editor, items, word, new JazzyLookupItemPreferencePolicy(), new DefaultCharFilter(editor, psiFile, 0));
+                lookupManager.showLookup(editor, items, prefix,
+                        new LookupItemPreferencePolicyImpl(),
+                        new DefaultCharFilter(editor, psiFile, 0));
             }
         }
     }
@@ -72,7 +74,7 @@ public final class SpellCheckerCompletion extends AnAction {
         }
     }
 
-    private static final class JazzyLookupItemPreferencePolicy implements LookupItemPreferencePolicy {
+    private static final class LookupItemPreferencePolicyImpl implements LookupItemPreferencePolicy {
         public void setPrefix(String prefix) {
         }
 

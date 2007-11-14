@@ -24,16 +24,13 @@ import org.intellij.spellChecker.engine.SpellChecker;
 import org.intellij.spellChecker.engine.SpellCheckerFactory;
 import org.intellij.spellChecker.options.SpellCheckerConfiguration;
 import org.intellij.spellChecker.util.Strings;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Spell checker inspection provider.
@@ -73,7 +70,10 @@ public final class SpellCheckerManager {
         return spellChecker.isIgnored(word.toLowerCase());
     }
 
-    @SuppressWarnings({"unchecked"})
+    public List<String> getVariants(@NotNull String prefix) {
+        return spellChecker.getVariants(prefix);
+    }
+
     @NotNull
     public List<String> getSuggestions(@NotNull String word) {
         if (!isIgnored(word) && !spellChecker.isCorrect(word)) {
@@ -91,7 +91,7 @@ public final class SpellCheckerManager {
 
             return suggestions;
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     /**
@@ -112,7 +112,19 @@ public final class SpellCheckerManager {
      * @throws java.io.IOException if dictionary load with problems
      */
     public void addDictionary(@NotNull InputStream inputStream, @NonNls String encoding) throws IOException {
-        spellChecker.addDictionary(inputStream, encoding);
+        addDictionary(inputStream, encoding, Locale.getDefault());
+    }
+
+    /**
+     * Load dictionary from stream.
+     *
+     * @param inputStream Dictionary input stream
+     * @param encoding    Encoding
+     * @param locale      Locale of dictionary
+     * @throws java.io.IOException if dictionary load with problems
+     */
+    public void addDictionary(@NotNull InputStream inputStream, @NonNls String encoding, @NonNls @NotNull Locale locale) throws IOException {
+        spellChecker.addDictionary(inputStream, encoding, locale);
     }
 
     public void addToDictionary(@NotNull String word) {

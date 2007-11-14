@@ -28,7 +28,7 @@
                 implementation="org.intellij.spellChecker.inspections.SpellCheckerInspectionToolProvider"/>
     </extensions>
     <actions>
-        <action id="JazzyCompletion" class="org.intellij.spellChecker.actions.SpellCheckerCompletion"
+        <action id="JazzyCompletion" class="org.intellij.spellChecker.actions.SpellCheckerCompletionAction"
                 text="Spell Checker Word Completion"
                 description="Completion word from spelling dictionary">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt s"/>
