@@ -121,7 +121,7 @@ final class JazzySpellChecker implements SpellChecker {
                 if (wordList != null) {
                     for (String word : wordList) {
                         if (word != null) {
-                            String lowerCased = removeSuffix(word).toLowerCase(locale);
+                            String lowerCased = word.toLowerCase(locale);
                             int length = lowerCased.length();
                             if (lowerCased.startsWith(prefixLowerCase) && length > prefixLength) {
                                 builder.setLength(0);
@@ -136,15 +136,6 @@ final class JazzySpellChecker implements SpellChecker {
                     }
                 }
             }
-        }
-
-        @NotNull
-        private static String removeSuffix(@NotNull String word) {
-            int i = word.indexOf('/');
-            if (i != -1) {
-                return word.substring(0, i);
-            }
-            return word;
         }
     }
 }
