@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 /**
  * @author Sergiy Dubovik
@@ -15,7 +16,11 @@ import java.io.InputStream;
 public class SpellCheckerRussianDictionary implements ApplicationComponent {
     private static final Logger LOG = Logger.getInstance("#SpellCheckerRussianDictionary");
     @NonNls
+    private static final Locale LOCALE = new Locale("ru");
+    @NonNls
     private static final String DICT_URL = "/dict/russian.0";
+    @NonNls
+    private static final String UTF_8 = "utf-8";
 
     private final SpellCheckerManager manager;
 
@@ -33,7 +38,7 @@ public class SpellCheckerRussianDictionary implements ApplicationComponent {
         InputStream is = SpellCheckerRussianDictionary.class.getResourceAsStream(DICT_URL);
         if (is != null) {
             try {
-                manager.addDictionary(is, "utf-8");
+                manager.addDictionary(is, UTF_8, LOCALE);
             } catch (IOException e) {
                 LOG.warn(e);
             }

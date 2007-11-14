@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 /**
  * @author Sergiy Dubovik
@@ -15,6 +16,8 @@ public class SpellCheckerGermanDictionary implements ApplicationComponent {
     private static final Logger LOG = Logger.getInstance("#SpellCheckerGermanDictionary");
     @NonNls
     private static final String DICT_URL = "/dict/german.0";
+    @NonNls
+    private static final String UTF_8 = "utf-8";
 
     private final SpellCheckerManager manager;
 
@@ -32,7 +35,7 @@ public class SpellCheckerGermanDictionary implements ApplicationComponent {
         InputStream is = SpellCheckerGermanDictionary.class.getResourceAsStream(DICT_URL);
         if (is != null) {
             try {
-                manager.addDictionary(is, "utf-8");
+                manager.addDictionary(is, UTF_8, Locale.GERMAN);
             } catch (IOException e) {
                 LOG.warn(e);
             }

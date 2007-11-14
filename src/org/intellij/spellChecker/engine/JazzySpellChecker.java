@@ -15,14 +15,17 @@
  */
 package org.intellij.spellChecker.engine;
 
+import com.intellij.util.containers.HashSet;
 import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.engine.Word;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Reader;
+import java.util.*;
 
 /**
  * Jazzy implementation of Spell Checker.
@@ -30,28 +33,39 @@ import java.util.List;
  * @author Alexey Efimov
  */
 final class JazzySpellChecker implements SpellChecker {
-    public void addDictionary(InputStream is, String encoding) throws IOException {
-        delegate.addDictionary(new SpellDictionaryHashMap(new InputStreamReader(is, encoding)));
+    private final com.swabunga.spell.event.SpellChecker delegate = new com.swabunga.spell.event.SpellChecker();
+    private final Set<SpellDictionaryImpl> dictionaries = new HashSet<SpellDictionaryImpl>();
+    private SpellDictionaryImpl userDictionary;
+
+    JazzySpellChecker() {
+        setUserDictionary();
     }
 
-    public void addToDictionary(String word) {
+    public void addDictionary(@NotNull InputStream is, @NonNls String encoding, @NotNull Locale locale) throws IOException {
+        SpellDictionaryImpl spellDictionary = new SpellDictionaryImpl(new InputStreamReader(is, encoding), locale);
+        dictionaries.add(spellDictionary);
+        delegate.addDictionary(spellDictionary);
+    }
+
+    public void addToDictionary(@NotNull String word) {
         delegate.addToDictionary(word);
     }
 
-    public void ignoreAll(String word) {
+    public void ignoreAll(@NotNull String word) {
         delegate.ignoreAll(word);
     }
 
-    public boolean isIgnored(String word) {
+    public boolean isIgnored(@NotNull String word) {
         return delegate.isIgnored(word);
     }
 
-    public boolean isCorrect(String word) {
+    public boolean isCorrect(@NotNull String word) {
         return delegate.isCorrect(word);
     }
 
+    @NotNull
     @SuppressWarnings({"unchecked"})
-    public List<String> getSuggestions(String word, int threshold) {
+    public List<String> getSuggestions(@NotNull String word, int threshold) {
         List<Word> words = delegate.getSuggestions(word, threshold);
         List<String> strings = new ArrayList<String>(words.size());
         for (Word w : words) {
@@ -60,14 +74,77 @@ final class JazzySpellChecker implements SpellChecker {
         return strings;
     }
 
+    @NotNull
+    public List<String> getVariants(@NotNull String prefix) {
+        List<String> variants = new ArrayList<String>();
+        userDictionary.appendWordsStartsWith(prefix, variants);
+        for (SpellDictionaryImpl dictionary : dictionaries) {
+            dictionary.appendWordsStartsWith(prefix, variants);
+        }
+        Collections.sort(variants);
+        return variants;
+    }
+
     public void reset() {
         delegate.reset();
+        setUserDictionary();
+    }
+
+    private void setUserDictionary() {
         try {
-            delegate.setUserDictionary(new SpellDictionaryHashMap());
+            userDictionary = new SpellDictionaryImpl(Locale.getDefault());
+            delegate.setUserDictionary(userDictionary);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private final com.swabunga.spell.event.SpellChecker delegate = new com.swabunga.spell.event.SpellChecker();
+    private static class SpellDictionaryImpl extends SpellDictionaryHashMap {
+        private final Locale locale;
+
+        public SpellDictionaryImpl(Locale locale) throws IOException {
+            this.locale = locale;
+        }
+
+        private SpellDictionaryImpl(Reader wordList, Locale locale) throws IOException {
+            super(wordList);
+            this.locale = locale;
+        }
+
+        @SuppressWarnings({"unchecked"})
+        public void appendWordsStartsWith(@NotNull String prefix, @NotNull Collection<String> buffer) {
+            String prefixLowerCase = prefix.toLowerCase(locale);
+            Collection<List<String>> values = mainDictionary.values();
+            int prefixLength = prefix.length();
+            StringBuilder builder = new StringBuilder();
+            for (List<String> wordList : values) {
+                if (wordList != null) {
+                    for (String word : wordList) {
+                        if (word != null) {
+                            String lowerCased = removeSuffix(word).toLowerCase(locale);
+                            int length = lowerCased.length();
+                            if (lowerCased.startsWith(prefixLowerCase) && length > prefixLength) {
+                                builder.setLength(0);
+                                builder.append(prefix);
+                                builder.append(lowerCased, prefixLength, length);
+                                String value = builder.toString();
+                                if (!buffer.contains(value)) {
+                                    buffer.add(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @NotNull
+        private static String removeSuffix(@NotNull String word) {
+            int i = word.indexOf('/');
+            if (i != -1) {
+                return word.substring(0, i);
+            }
+            return word;
+        }
+    }
 }
