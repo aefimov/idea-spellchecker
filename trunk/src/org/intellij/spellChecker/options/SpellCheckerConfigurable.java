@@ -90,7 +90,7 @@ public final class SpellCheckerConfigurable implements Configurable {
         if (options != null) {
             replaceAll(configuration.USER_DICTIONARY_WORDS, options.getUserDictionaryWords());
             replaceAll(configuration.IGNORED_WORDS, options.getIgnoredWords());
-            manager.reloadConfiguration();
+            manager.reloadAndRestartInspections();
         }
     }
 

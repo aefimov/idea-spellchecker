@@ -17,6 +17,7 @@ package org.intellij.spellChecker;
 
 import com.intellij.codeHighlighting.HighlightDisplayLevel;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
@@ -143,7 +144,7 @@ public final class SpellCheckerManager {
         return configuration.IGNORED_WORDS;
     }
 
-    public void reloadConfiguration() {
+    private void reloadConfiguration() {
         spellChecker.reset();
         for (String word : ejectAll(configuration.IGNORED_WORDS)) {
             ignoreAll(word);
@@ -151,16 +152,22 @@ public final class SpellCheckerManager {
         for (String word : ejectAll(configuration.USER_DICTIONARY_WORDS)) {
             addToDictionary(word);
         }
-        restartInspections();
     }
 
-    private static void restartInspections() {
-        Project[] projects = ProjectManager.getInstance().getOpenProjects();
-        for (Project project : projects) {
-            if (project.isOpen() && !project.isDefault()) {
-                DaemonCodeAnalyzer.getInstance(project).restart();
-            }
-        }
+    public void reloadAndRestartInspections() {
+        reloadConfiguration();
+        ApplicationManager.getApplication().invokeLater(
+                new Runnable() {
+                    public void run() {
+                        Project[] projects = ProjectManager.getInstance().getOpenProjects();
+                        for (Project project : projects) {
+                            if (project.isInitialized() && project.isOpen() && !project.isDefault()) {
+                                DaemonCodeAnalyzer.getInstance(project).restart();
+                            }
+                        }
+                    }
+                }
+        );
     }
 
     private HashSet<String> ejectAll(Set<String> from) {
