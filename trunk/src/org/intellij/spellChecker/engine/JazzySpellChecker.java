@@ -67,21 +67,11 @@ final class JazzySpellChecker implements SpellChecker {
     }
 
     public boolean isIgnored(@NotNull String word) {
-        return !isSomeCharsAllowed(word, allowed) || delegate.isIgnored(word);
+        return !isEntireWordAllowed(word, allowed) || delegate.isIgnored(word);
     }
 
     public boolean isCorrect(@NotNull String word) {
-        return !isSomeCharsAllowed(word, allowed) || delegate.isCorrect(word);
-    }
-
-    private boolean isSomeCharsAllowed(String word, Set<Character> index) {
-        char[] chars = word.toCharArray();
-        for (char c : chars) {
-            if (index.contains(c)) {
-                return true;
-            }
-        }
-        return false;
+        return !isEntireWordAllowed(word, allowed) || delegate.isCorrect(word);
     }
 
     private boolean isEntireWordAllowed(String word, Set<Character> index) {
