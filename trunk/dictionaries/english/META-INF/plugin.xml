@@ -4,7 +4,7 @@
     <id>SpellChecker-Dict-English</id>
     <description>Standard english dictionary for Spell Checker plugin</description>
     <depends>SpellChecker</depends>
-    <version>1.0</version>
+    <version>1.1</version>
     <vendor>Sergiy Dubovik, Alexey Efimov</vendor>
     <idea-version since-build="7269"/>
 
