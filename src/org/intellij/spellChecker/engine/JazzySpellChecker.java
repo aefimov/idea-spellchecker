@@ -33,7 +33,7 @@ import java.util.*;
  * @author Alexey Efimov
  */
 final class JazzySpellChecker implements SpellChecker {
-    private final com.swabunga.spell.event.SpellChecker delegate = new com.swabunga.spell.event.SpellChecker();
+    private final SpellCheckerWrapper delegate = new SpellCheckerWrapper();
     private final Map<SpellDictionaryImpl, Set<Character>> dictionaries = new HashMap<SpellDictionaryImpl, Set<Character>>();
     private final Set<Character> allowed = new HashSet<Character>();
     private SpellDictionaryImpl userDictionary;
@@ -55,10 +55,13 @@ final class JazzySpellChecker implements SpellChecker {
         indexWord(word);
     }
 
-    private void indexWord(String word) {
-        char[] chars = word.toCharArray();
-        for (char c : chars) {
-            allowed.add(c);
+    private void indexWord(CharSequence word) {
+        indexWord(word, allowed);
+    }
+
+    private static void indexWord(CharSequence word, Set<Character> index) {
+        for (int i = 0; i < word.length(); i++) {
+            index.add(word.charAt(i));
         }
     }
 
@@ -74,10 +77,9 @@ final class JazzySpellChecker implements SpellChecker {
         return !isEntireWordAllowed(word, allowed) || delegate.isCorrect(word);
     }
 
-    private boolean isEntireWordAllowed(String word, Set<Character> index) {
-        char[] chars = word.toCharArray();
-        for (char c : chars) {
-            if (!index.contains(c)) {
+    private static boolean isEntireWordAllowed(CharSequence word, Set<Character> index) {
+        for (int i = 0; i < word.length(); i++) {
+            if (!index.contains(word.charAt(i))) {
                 return false;
             }
         }
@@ -85,13 +87,24 @@ final class JazzySpellChecker implements SpellChecker {
     }
 
     private Set<Character> findDictionaryIndex(String word) {
+        Set<Character> commonIndex = null;
+        Set<Character> lastIndex = null;
         Collection<Set<Character>> indexes = dictionaries.values();
         for (Set<Character> index : indexes) {
             if (isEntireWordAllowed(word, index)) {
-                return index;
+                if (lastIndex != null && commonIndex == null) {
+                    commonIndex = new HashSet<Character>(lastIndex.size() + index.size());
+                    commonIndex.addAll(lastIndex);
+                    lastIndex = commonIndex;
+                }
+                if (commonIndex != null) {
+                    commonIndex.addAll(index);
+                } else {
+                    lastIndex = index;
+                }
             }
         }
-        return null;
+        return lastIndex;
     }
 
     @NotNull
@@ -117,7 +130,8 @@ final class JazzySpellChecker implements SpellChecker {
             Set<Character> index = findDictionaryIndex(prefix);
             if (index != null) {
                 for (SpellDictionaryImpl dictionary : dictionaries.keySet()) {
-                    if (index.equals(dictionaries.get(dictionary))) {
+                    Set<Character> dictionaryIndex = dictionaries.get(dictionary);
+                    if (isSame(index, dictionaryIndex)) {
                         dictionary.appendWordsStartsWith(prefix, variants);
                     }
                 }
@@ -126,6 +140,18 @@ final class JazzySpellChecker implements SpellChecker {
             return variants;
         }
         return Collections.emptyList();
+    }
+
+    private static boolean isSame(@NotNull Set<Character> i1, @NotNull Set<Character> i2) {
+        if (i1.equals(i2)) {
+            return true;
+        }
+        for (Character c : i1) {
+            if (!i2.contains(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void reset() {
@@ -167,15 +193,12 @@ final class JazzySpellChecker implements SpellChecker {
                 if (wordList != null) {
                     for (String word : wordList) {
                         if (word != null) {
-                            char[] chars = word.toCharArray();
-                            for (char c : chars) {
-                                index.add(c);
-                            }
+                            indexWord(word, index);
                         }
                     }
                 }
             }
-            return index;
+            return Collections.unmodifiableSet(index);
         }
 
         @SuppressWarnings({"unchecked"})
@@ -203,6 +226,17 @@ final class JazzySpellChecker implements SpellChecker {
                     }
                 }
             }
+        }
+    }
+
+    private static final class SpellCheckerWrapper extends com.swabunga.spell.event.SpellChecker {
+        private SpellCheckerWrapper() {
+            // Disable cashing
+            setCache(0);
+        }
+
+        public List getSuggestions(String word, int threshold) {
+            return super.getSuggestions(word, threshold);
         }
     }
 }

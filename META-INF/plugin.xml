@@ -3,7 +3,7 @@
     <name>Spell Checker</name>
     <id>SpellChecker</id>
     <description>Integrates spell checker jazzy into IDEA as inspection</description>
-    <version>0.3.1</version>
+    <version>0.3.2</version>
     <vendor>Sergiy Dubovik, Alexey Efimov</vendor>
     <idea-version since-build="7269"/>
 
@@ -28,11 +28,18 @@
                 implementation="org.intellij.spellChecker.inspections.SpellCheckerInspectionToolProvider"/>
     </extensions>
     <actions>
-        <action id="JazzyCompletion" class="org.intellij.spellChecker.actions.SpellCheckerCompletionAction"
+        <action id="SpellCheckerCompletion" class="org.intellij.spellChecker.actions.SpellCheckerCompletionAction"
                 text="Spell Checker Word Completion"
                 description="Completion word from spelling dictionary">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt s"/>
         </action>
+        <!-- Not finished yet -->
+        <!--
+        <group id="org.intellij.spellChecker.actions.SpellingActionGroup"
+               class="org.intellij.spellChecker.actions.SpellingActionGroup" text="Spelling">
+            <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="AnalyzeMenu"/>
+        </group>
+        -->
     </actions>
 
 </idea-plugin>
