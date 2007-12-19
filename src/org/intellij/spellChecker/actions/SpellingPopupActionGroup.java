@@ -42,7 +42,7 @@ import java.util.Map;
  *
  * @author Alexey Efimov
  */
-public class SpellingPopupActionGroup extends ActionGroup {
+public final class SpellingPopupActionGroup extends ActionGroup {
     public SpellingPopupActionGroup() {
     }
 
