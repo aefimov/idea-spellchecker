@@ -24,8 +24,8 @@ import com.intellij.psi.xml.XmlText;
  *
  * @author Sergiy Dubovik
  */
-public class AdvancedXmlSpellingVisitor extends AbstractSpellCheckerVisitor {
-    protected AdvancedXmlSpellingVisitor(InspectionManager inspectionManager) {
+public class XmlSpellingVisitor extends AbstractSpellCheckerVisitor {
+    protected XmlSpellingVisitor(InspectionManager inspectionManager) {
         super(inspectionManager);
     }
 

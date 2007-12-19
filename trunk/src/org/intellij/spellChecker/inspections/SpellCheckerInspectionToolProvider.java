@@ -30,8 +30,8 @@ public class SpellCheckerInspectionToolProvider implements InspectionToolProvide
             FieldNameWithMistakesInspection.class,
             LocalVariableNameWithMistakesInspection.class,
             StringWithMistakesInspection.class,
-            AdvancedXmlSpellingInspection.class,
-            AdvancedPropertiesSpellingInspection.class,
+            XmlWithMistakesInspection.class,
+            PropertyValueWithMistakesInspection.class,
     };
 
     public Class[] getInspectionClasses() {

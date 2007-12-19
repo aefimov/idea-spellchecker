@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Sergiy Dubovik
  */
-public class AdvancedXmlSpellingInspection extends LocalInspectionTool {
+public class XmlWithMistakesInspection extends LocalInspectionTool {
     @Nls
     @NotNull
     public String getGroupDisplayName() {
@@ -42,13 +42,13 @@ public class AdvancedXmlSpellingInspection extends LocalInspectionTool {
     @Nls
     @NotNull
     public String getDisplayName() {
-        return SpellCheckerBundle.message("tag.text.with.mistakes");
+        return SpellCheckerBundle.message("xml.with.mistakes");
     }
 
     @NonNls
     @NotNull
     public String getShortName() {
-        return "AdvancedXmlSpelling";
+        return "XmlWithMistakes";
     }
 
     public boolean isEnabledByDefault() {
@@ -62,7 +62,7 @@ public class AdvancedXmlSpellingInspection extends LocalInspectionTool {
 
     @Nullable
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
-        AbstractSpellCheckerVisitor visitor = new AdvancedXmlSpellingVisitor(manager);
+        AbstractSpellCheckerVisitor visitor = new XmlSpellingVisitor(manager);
         file.accept(visitor);
         return visitor.getProblems();
     }

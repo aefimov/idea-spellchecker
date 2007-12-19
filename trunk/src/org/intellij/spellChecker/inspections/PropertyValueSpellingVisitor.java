@@ -20,13 +20,15 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NonNls;
 
 /**
+ * Property value visitor.
+ *
  * @author Sergiy Dubovik
  */
-public class AdvancedPropertiesSpellingVisitor extends AbstractSpellCheckerVisitor {
+public class PropertyValueSpellingVisitor extends AbstractSpellCheckerVisitor {
     @NonNls
     private static final String PROPERTY = "Property";
 
-    protected AdvancedPropertiesSpellingVisitor(InspectionManager inspectionManager) {
+    protected PropertyValueSpellingVisitor(InspectionManager inspectionManager) {
         super(inspectionManager);
     }
 

@@ -12,11 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-  */
+ */
 package org.intellij.spellChecker.inspections;
 
-import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
+import com.intellij.openapi.actionSystem.Anchor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Sergiy Dubovik
  */
-public class ChangeToQuickFix implements LocalQuickFix {
+public class ChangeToQuickFix implements SpellCheckerQuickFix {
 
     private TextRange textRange;
 
@@ -51,17 +51,23 @@ public class ChangeToQuickFix implements LocalQuickFix {
         return SpellCheckerBundle.message("change.to");
     }
 
+    @NotNull
+    public Anchor getPopupActionAnchor() {
+        return Anchor.FIRST;
+    }
+
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
         PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
         PsiFile psiFile = descriptor.getPsiElement().getContainingFile();
         Document document = documentManager.getDocument(psiFile);
         int psiElementOffset = descriptor.getPsiElement().getTextRange().getStartOffset();
-        if (document != null)
+        if (document != null) {
             document.replaceString(
                     psiElementOffset + textRange.getStartOffset(),
                     psiElementOffset + textRange.getEndOffset(),
                     correctWord
             );
+        }
     }
 
 }

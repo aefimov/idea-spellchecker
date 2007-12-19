@@ -15,7 +15,6 @@
  */
 package org.intellij.spellChecker.engine;
 
-import com.intellij.util.containers.HashSet;
 import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.engine.Word;
 import org.jetbrains.annotations.NonNls;
@@ -127,13 +126,12 @@ final class JazzySpellChecker implements SpellChecker {
         if (prefix.length() > 0) {
             List<String> variants = new ArrayList<String>();
             userDictionary.appendWordsStartsWith(prefix, variants);
-            Set<Character> index = findDictionaryIndex(prefix);
-            if (index != null) {
-                for (SpellDictionaryImpl dictionary : dictionaries.keySet()) {
-                    Set<Character> dictionaryIndex = dictionaries.get(dictionary);
-                    if (isSame(index, dictionaryIndex)) {
-                        dictionary.appendWordsStartsWith(prefix, variants);
-                    }
+            Set<Character> index = new HashSet<Character>();
+            indexWord(prefix, index);
+            for (SpellDictionaryImpl dictionary : dictionaries.keySet()) {
+                Set<Character> dictionaryIndex = dictionaries.get(dictionary);
+                if (isSame(index, dictionaryIndex)) {
+                    dictionary.appendWordsStartsWith(prefix, variants);
                 }
             }
             Collections.sort(variants);
