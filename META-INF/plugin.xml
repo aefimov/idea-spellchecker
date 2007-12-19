@@ -5,41 +5,31 @@
     <description>Integrates spell checker jazzy into IDEA as inspection</description>
     <version>0.3.2</version>
     <vendor>Sergiy Dubovik, Alexey Efimov</vendor>
-    <idea-version since-build="7269"/>
+    <idea-version since-build="7531"/>
 
     <extensions xmlns="com.intellij">
-        <!-- Not good to fill JetBrains JIRA :) -->
-        <!--
-        <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
-        -->
-
         <applicationService serviceInterface="org.intellij.spellChecker.options.SpellCheckerConfiguration"
                             serviceImplementation="org.intellij.spellChecker.options.SpellCheckerConfiguration"/>
         <applicationService serviceInterface="org.intellij.spellChecker.SpellCheckerManager"
                             serviceImplementation="org.intellij.spellChecker.SpellCheckerManager"/>
 
-        <!-- Does not work yet. See http://www.jetbrains.net/jira/browse/IDEA-16223 -->
-        <!--
         <exportable serviceInterface="org.intellij.spellChecker.options.SpellCheckerConfiguration"/>
-        -->
 
         <applicationConfigurable implementation="org.intellij.spellChecker.options.SpellCheckerConfigurable"/>
         <inspectionToolProvider
                 implementation="org.intellij.spellChecker.inspections.SpellCheckerInspectionToolProvider"/>
     </extensions>
     <actions>
-        <action id="SpellCheckerCompletion" class="org.intellij.spellChecker.actions.SpellCheckerCompletionAction"
-                text="Spell Checker Word Completion"
-                description="Completion word from spelling dictionary">
+        <action id="SpellCheckerCompletion" class="org.intellij.spellChecker.actions.CompleteWordFromDictionaryAction"
+                text="Complete Word From Dictionary"
+                description="Complete word from spelling dictionaries">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt s"/>
+            <add-to-group group-id="CodeCompletionGroup" anchor="after" relative-to-action="WordCompletion"/>
         </action>
-        <!-- Not finished yet -->
-        <!--
-        <group id="org.intellij.spellChecker.actions.SpellingActionGroup"
-               class="org.intellij.spellChecker.actions.SpellingActionGroup" text="Spelling">
+        <group id="org.intellij.spellChecker.actions.SpellingPopupActionGroup"
+               class="org.intellij.spellChecker.actions.SpellingPopupActionGroup" text="Spelling" popup="true">
             <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="AnalyzeMenu"/>
         </group>
-        -->
     </actions>
 
 </idea-plugin>

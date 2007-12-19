@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Sergiy Dubovik
  */
-public class AdvancedPropertiesSpellingInspection extends LocalInspectionTool {
+public class PropertyValueWithMistakesInspection extends LocalInspectionTool {
     @NonNls
     private static final String PROPERTIES = "Properties";
 
@@ -46,13 +46,13 @@ public class AdvancedPropertiesSpellingInspection extends LocalInspectionTool {
     @Nls
     @NotNull
     public String getDisplayName() {
-        return SpellCheckerBundle.message("advanced.properties.spelling.inspection");
+        return SpellCheckerBundle.message("property.value.with.mistakes");
     }
 
     @NonNls
     @NotNull
     public String getShortName() {
-        return "AdvancedPropertiesSpelling";
+        return "PropertyValueWithMistakes";
     }
 
     public boolean isEnabledByDefault() {
@@ -68,7 +68,7 @@ public class AdvancedPropertiesSpellingInspection extends LocalInspectionTool {
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
         Language language = file.getLanguage();
         if (PROPERTIES.equals(language.getID())) {
-            AbstractSpellCheckerVisitor visitor = new AdvancedPropertiesSpellingVisitor(manager);
+            AbstractSpellCheckerVisitor visitor = new PropertyValueSpellingVisitor(manager);
             file.accept(visitor);
             return visitor.getProblems();
         }

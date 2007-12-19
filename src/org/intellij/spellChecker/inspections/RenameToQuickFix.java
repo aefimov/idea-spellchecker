@@ -15,8 +15,8 @@
  */
 package org.intellij.spellChecker.inspections;
 
-import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
+import com.intellij.openapi.actionSystem.Anchor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.refactoring.RefactoringFactory;
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Alexey Efimov
  */
-public class RenameToQuickFix implements LocalQuickFix {
+public class RenameToQuickFix implements SpellCheckerQuickFix {
     private String correctName;
 
     public RenameToQuickFix(String correctName) {
@@ -44,6 +44,11 @@ public class RenameToQuickFix implements LocalQuickFix {
     @NotNull
     public String getFamilyName() {
         return SpellCheckerBundle.message("rename.to");
+    }
+
+    @NotNull
+    public Anchor getPopupActionAnchor() {
+        return Anchor.FIRST;
     }
 
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {

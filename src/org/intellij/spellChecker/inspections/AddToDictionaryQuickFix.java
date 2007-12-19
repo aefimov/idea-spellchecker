@@ -15,8 +15,8 @@
  */
 package org.intellij.spellChecker.inspections;
 
-import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
+import com.intellij.openapi.actionSystem.Anchor;
 import com.intellij.openapi.project.Project;
 import org.intellij.spellChecker.SpellCheckerManager;
 import org.intellij.spellChecker.util.SpellCheckerBundle;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Sergiy Dubovik
  */
-public class AddToDictionaryQuickFix implements LocalQuickFix {
+public class AddToDictionaryQuickFix implements SpellCheckerQuickFix {
     private String word;
 
     public AddToDictionaryQuickFix(String word) {
@@ -42,6 +42,11 @@ public class AddToDictionaryQuickFix implements LocalQuickFix {
     @NotNull
     public String getFamilyName() {
         return SpellCheckerBundle.message("spelling");
+    }
+
+    @NotNull
+    public Anchor getPopupActionAnchor() {
+        return Anchor.LAST;
     }
 
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {

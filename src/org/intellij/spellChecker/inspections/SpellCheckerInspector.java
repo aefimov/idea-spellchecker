@@ -45,7 +45,7 @@ public class SpellCheckerInspector {
                 fixes.add(new ChangeToQuickFix(textRange, suggestion));
             }
             fixes.add(new AddToDictionaryQuickFix(word));
-            fixes.add(new IgnoreWordQuickFix(word));
+            fixes.add(new AddToIgnoreListQuickFix(word));
             return Collections.singletonList(inspectionManager.createProblemDescriptor(
                     element, textRange,
                     SpellCheckerBundle.message("word.0.is.misspelled", word),
@@ -70,7 +70,7 @@ public class SpellCheckerInspector {
                         fixes.add(new RenameToQuickFix(subRange.replace(child.getText(), suggestion)));
                     }
                     fixes.add(new AddToDictionaryQuickFix(word));
-                    fixes.add(new IgnoreWordQuickFix(word));
+                    fixes.add(new AddToIgnoreListQuickFix(word));
                     return Collections.singletonList(inspectionManager.createProblemDescriptor(
                             element, textRange,
                             SpellCheckerBundle.message("word.0.is.misspelled", word),

@@ -26,6 +26,7 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.codeStyle.NameUtil;
 import org.intellij.spellChecker.SpellCheckerManager;
 
 import java.util.ArrayList;
@@ -35,41 +36,58 @@ import java.util.List;
  * Completion action for spell checker.
  *
  * @author Sergiy Dubovik
+ * @author Alexey Efimov
  */
-public final class SpellCheckerCompletionAction extends AnAction {
+public final class CompleteWordFromDictionaryAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getData(DataKeys.PROJECT);
         Editor editor = e.getData(DataKeys.EDITOR);
         PsiFile psiFile = e.getData(DataKeys.PSI_FILE);
         if (project != null && editor != null && psiFile != null) {
-            int documentOffset = editor.getCaretModel().getOffset() - 1;
+            // Get position before caret
+            int caretOffset = editor.getCaretModel().getOffset();
+            int documentOffset = caretOffset - 1;
 
             if (documentOffset > 0) {
-                StringBuffer buffer = new StringBuffer();
-                char ch = editor.getDocument().getCharsSequence().charAt(documentOffset);
-                while (Character.isJavaIdentifierPart(ch)) {
-                    if (documentOffset == 0) {
-                        break;
+                StringBuilder prefixBuilder = new StringBuilder();
+                CharSequence charSequence = editor.getDocument().getCharsSequence();
+                for (char c;
+                     documentOffset >= 0 && Character.isJavaIdentifierPart(c = charSequence.charAt(documentOffset));
+                     documentOffset--) {
+                    prefixBuilder.append(c);
+                }
+                documentOffset = caretOffset;
+                StringBuilder suffixBuilder = new StringBuilder();
+                for (char c;
+                     documentOffset < charSequence.length() && Character.isJavaIdentifierPart(c = charSequence.charAt(documentOffset));
+                     documentOffset++) {
+                    suffixBuilder.append(c);
+                }
+
+                if (prefixBuilder.length() > 0) {
+                    String[] prefixes = NameUtil.nameToWords(prefixBuilder.reverse().toString());
+                    String prefix = prefixes.length > 0 ? prefixes[prefixes.length - 1] : "";
+                    if (prefix.length() > 0) {
+                        String[] suffixes = NameUtil.nameToWords(suffixBuilder.toString());
+                        String suffix = suffixes.length > 0 ? suffixes[0] : "";
+                        if (suffix.length() > 0 && Character.isLowerCase(suffix.charAt(0))) {
+                            // Select replacement part
+                            editor.getSelectionModel().setSelection(caretOffset, caretOffset + suffix.length());
+                        }
+                        List<String> variants = SpellCheckerManager.getInstance().getVariants(prefix);
+                        List<LookupItem<String>> lookupItems = new ArrayList<LookupItem<String>>();
+                        for (String variant : variants) {
+                            lookupItems.add(new LookupItem<String>(variant, variant));
+                        }
+
+                        LookupItem[] items = new LookupItem[lookupItems.size()];
+                        items = lookupItems.toArray(items);
+                        LookupManager lookupManager = LookupManager.getInstance(project);
+                        lookupManager.showLookup(editor, items, prefix,
+                                new LookupItemPreferencePolicyImpl(),
+                                new DefaultCharFilter(editor, psiFile, 0));
                     }
-
-                    buffer.append(ch);
-                    documentOffset -= 1;
-                    ch = editor.getDocument().getCharsSequence().charAt(documentOffset);
                 }
-
-                String prefix = buffer.reverse().toString();
-                List<String> variants = SpellCheckerManager.getInstance().getVariants(prefix);
-                List<LookupItem<String>> lookupItems = new ArrayList<LookupItem<String>>();
-                for (String variant : variants) {
-                    lookupItems.add(new LookupItem<String>(variant, variant));
-                }
-
-                LookupItem[] items = new LookupItem[lookupItems.size()];
-                items = lookupItems.toArray(items);
-                LookupManager lookupManager = LookupManager.getInstance(project);
-                lookupManager.showLookup(editor, items, prefix,
-                        new LookupItemPreferencePolicyImpl(),
-                        new DefaultCharFilter(editor, psiFile, 0));
             }
         }
     }
