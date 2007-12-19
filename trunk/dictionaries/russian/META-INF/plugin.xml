@@ -4,7 +4,7 @@
     <id>SpellChecker-Dict-Russian</id>
     <description>Standard russian dictionary for Spell Checker plugin</description>
     <depends>SpellChecker</depends>
-    <version>0.1</version>
+    <version>1.0</version>
     <vendor>Sergiy Dubovik, Alexey Efimov</vendor>
     <idea-version since-build="7269"/>
 
