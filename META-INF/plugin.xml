@@ -3,7 +3,7 @@
     <name>Spell Checker</name>
     <id>SpellChecker</id>
     <description>Integrates spell checker jazzy into IDEA as inspection</description>
-    <version>0.3.2</version>
+    <version>1.0</version>
     <vendor>Sergiy Dubovik, Alexey Efimov</vendor>
     <idea-version since-build="7531"/>
 
@@ -12,9 +12,6 @@
                             serviceImplementation="org.intellij.spellChecker.options.SpellCheckerConfiguration"/>
         <applicationService serviceInterface="org.intellij.spellChecker.SpellCheckerManager"
                             serviceImplementation="org.intellij.spellChecker.SpellCheckerManager"/>
-
-        <exportable serviceInterface="org.intellij.spellChecker.options.SpellCheckerConfiguration"/>
-
         <applicationConfigurable implementation="org.intellij.spellChecker.options.SpellCheckerConfigurable"/>
         <inspectionToolProvider
                 implementation="org.intellij.spellChecker.inspections.SpellCheckerInspectionToolProvider"/>
